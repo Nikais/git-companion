@@ -5,7 +5,7 @@ import path from 'node:path';
 // Bundle runtime dependencies so a marketplace install only needs Node and Git.
 const result = await build({
   entryPoints: ['src/server.js'],
-  outfile: 'plugins/git-mcp/dist/server.cjs',
+  outfile: 'plugins/git-companion/dist/server.cjs',
   bundle: true,
   platform: 'node',
   target: 'node20',
@@ -28,4 +28,4 @@ for (const directory of [...packageDirs].sort()) {
   const texts = await Promise.all(licenses.map(name => readFile(path.join(directory, name), 'utf8')));
   notices.push(`${metadata.name}@${metadata.version} (${metadata.license ?? 'see license below'})\n${texts.join('\n')}`);
 }
-await writeFile('plugins/git-mcp/dist/THIRD_PARTY_NOTICES.txt', notices.join('\n\n----------------------------------------\n\n'));
+await writeFile('plugins/git-companion/dist/THIRD_PARTY_NOTICES.txt', notices.join('\n\n----------------------------------------\n\n'));

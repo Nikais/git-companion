@@ -1,0 +1,4 @@
+interface:
+  display_name: "Synchronize Git changes"
+  short_description: "Fetch, pull and push explicit remote branches"
+  default_prompt: "Use $git-sync to synchronize the requested branch with its configured remote."

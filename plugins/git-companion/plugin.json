@@ -1,0 +1,25 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "git-companion",
+  "version": "0.2.0",
+  "description": "Inspect, edit, synchronize and recover Git repositories with local MCP tools and agent workflows.",
+  "keywords": [
+    "git",
+    "codex",
+    "mcp",
+    "code-review"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Git Companion",
+        "shortDescription": "Local Git tools and workflows for AI coding agents",
+        "category": "Coding",
+        "capabilities": [
+          "Read",
+          "Write"
+        ]
+      }
+    }
+  }
+}

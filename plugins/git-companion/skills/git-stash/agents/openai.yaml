@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage Git stashes"
+  short_description: "Save, inspect and restore temporary local changes"
+  default_prompt: "Use $git-stash to perform the requested Git stash operation."

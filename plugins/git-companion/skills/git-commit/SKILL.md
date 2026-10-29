@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Prepare or create a focused local Git commit using the Git MCP tools when the user asks to commit changes or draft a commit message.
+description: Prepare or create a focused local Git commit using the Git Companion tools when the user asks to commit changes or draft a commit message.
 ---
 
 Use the plugin's `git` MCP tools with the target working tree's absolute `repo_path`. Discover the host's namespaced tool names and read applicable repository instructions.

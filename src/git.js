@@ -3,13 +3,10 @@ import { createHash } from 'node:crypto';
 import { mkdtemp, realpath, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-
-export class GitError extends Error {
-  constructor(code, message) {
-    super(message);
-    this.code = code;
-  }
-}
+import { GitError } from './errors.js';
+import { isReadOnly, toolDefinition } from './tools.js';
+import { executeExtended, setupRepository } from './operations.js';
+export { GitError } from './errors.js';
 
 const inside = (root, file) => {
   const relative = path.relative(root, file);
@@ -17,16 +14,17 @@ const inside = (root, file) => {
 };
 
 /** Git subprocesses never use a shell. Output and execution time are bounded. */
-export async function runGit(cwd, args, { hooksPath, timeoutMs = 15_000, maxBytes = 512_000, allowed = [0] } = {}) {
+export async function runGit(cwd, args, { hooksPath, timeoutMs = 15_000, maxBytes = 512_000, allowed = [0], input, literalPaths = true } = {}) {
   const env = { ...process.env };
   // A caller's GIT_DIR/GIT_WORK_TREE/GIT_CONFIG_* must not redirect this request.
   for (const name of Object.keys(env)) if (name.startsWith('GIT_')) delete env[name];
-  Object.assign(env, { GIT_TERMINAL_PROMPT: '0', GIT_OPTIONAL_LOCKS: '0', LC_ALL: 'C' });
-  const flags = ['--no-pager', '--literal-pathspecs', '-c', 'core.fsmonitor=false', '-c', 'color.ui=false'];
+  Object.assign(env, { GIT_TERMINAL_PROMPT: '0', GIT_OPTIONAL_LOCKS: '0', GIT_EDITOR: 'true', GIT_SEQUENCE_EDITOR: 'true', GIT_MERGE_AUTOEDIT: 'no', LC_ALL: 'C' });
+  const flags = ['--no-pager', ...(literalPaths ? ['--literal-pathspecs'] : []), '-c', 'core.fsmonitor=false', '-c', 'color.ui=false', '-c', 'submodule.recurse=false', '-c', 'protocol.ext.allow=never', '-c', 'commit.gpgSign=false', '-c', 'tag.gpgSign=false', '-c', 'core.askPass=', '-c', 'credential.interactive=false'];
   if (hooksPath) flags.push('-c', `core.hooksPath=${hooksPath}`);
   return new Promise((resolve, reject) => {
     const child = spawn('git', [...flags, ...args], { cwd, env, shell: false, windowsHide: true });
-    child.stdin.end();
+    child.stdin.on('error', () => {}); // A rejected patch may close stdin before all input is consumed.
+    child.stdin.end(input);
     const stdout = [], stderr = [];
     let bytes = 0, failure;
     const timer = setTimeout(() => {
@@ -74,10 +72,14 @@ export class GitService {
     this.roots = roots;
     this.readOnly = readOnly;
     this.queue = Promise.resolve();
-    this.hooksPath = mkdtemp(path.join(tmpdir(), 'git-mcp-hooks-'));
+    this.hooksPath = mkdtemp(path.join(tmpdir(), 'git-companion-hooks-'));
   }
 
   async close() { await rm(await this.hooksPath, { recursive: true, force: true }); }
+
+  async gitAt(directory, args, options = {}) {
+    return runGit(directory, args, { hooksPath: await this.hooksPath, ...options });
+  }
 
   async repository(directory) {
     if (!path.isAbsolute(directory)) throw new GitError('INVALID_INPUT', 'repo_path must be an absolute path.');
@@ -128,8 +130,13 @@ export class GitService {
   }
 
   async perform(name, args) {
-    const writes = ['git_add', 'git_unstage', 'git_commit', 'git_create_branch', 'git_switch_branch'];
-    if (this.readOnly && writes.includes(name)) throw new GitError('READ_ONLY', 'Mutations are disabled by GIT_MCP_READ_ONLY.');
+    const definition = toolDefinition(name);
+    if (!definition) throw new GitError('UNKNOWN_TOOL', `Unknown tool: ${name}`);
+    if (this.readOnly && !isReadOnly(name, args)) throw new GitError('READ_ONLY', 'Mutations are disabled by GIT_MCP_READ_ONLY.');
+    const parsed = definition.input.safeParse(args);
+    if (!parsed.success) throw new GitError('INVALID_INPUT', parsed.error.issues.map(issue => `${issue.path.join('.')}: ${issue.message}`).join('; '));
+    args = parsed.data;
+    if (name === 'git_init' || name === 'git_clone') return setupRepository(this, name, args);
     const { root, git } = await this.repository(args.repo_path);
     const paths = this.paths(root, args.paths);
     const result = { repository: root };
@@ -204,7 +211,7 @@ export class GitService {
         }
         return { ...result, branch: args.name };
       }
-      default: throw new GitError('UNKNOWN_TOOL', `Unknown tool: ${name}`);
+      default: return executeExtended(this, name, args, { root, git, paths, result });
     }
   }
 }

@@ -10,21 +10,21 @@ import { fixture } from './helpers.js';
 
 test('bundled server negotiates MCP, advertises schemas and performs a full commit workflow', async t => {
   const { repo } = await fixture(t);
-  const installed = await mkdtemp(path.join(tmpdir(), 'git-mcp-install-'));
+  const installed = await mkdtemp(path.join(tmpdir(), 'git-companion-install-'));
   t.after(() => rm(installed, { recursive: true, force: true }));
   for (const name of ['plugin.json', 'mcp.json', 'skills', 'dist']) {
-    await cp(fileURLToPath(new URL(`../plugins/git-mcp/${name}`, import.meta.url)), path.join(installed, name), { recursive: true });
+    await cp(fileURLToPath(new URL(`../plugins/git-companion/${name}`, import.meta.url)), path.join(installed, name), { recursive: true });
   }
   const manifest = JSON.parse(await readFile(path.join(installed, 'plugin.json'), 'utf8'));
-  assert.equal(manifest.name, 'git-mcp');
-  assert.equal((await readdir(path.join(installed, 'skills'))).length, 3);
+  assert.equal(manifest.name, 'git-companion');
+  assert.equal((await readdir(path.join(installed, 'skills'))).length, 11);
   const config = JSON.parse(await readFile(path.join(installed, 'mcp.json'), 'utf8')).mcpServers.git;
-  const client = new Client({ name: 'git-mcp-test', version: '1.0.0' });
+  const client = new Client({ name: 'git-companion-test', version: '1.0.0' });
   const transport = new StdioClientTransport({ command: config.command, args: config.args.map(arg => arg.replaceAll('${PLUGIN_ROOT}', installed)), cwd: installed, stderr: 'pipe' });
   t.after(() => client.close());
   await client.connect(transport);
   const listed = await client.listTools();
-  assert.equal(listed.tools.length, 10);
+  assert.equal(listed.tools.length, 44);
   assert.equal(listed.tools.find(tool => tool.name === 'git_status').annotations.readOnlyHint, true);
   assert.equal(listed.tools.find(tool => tool.name === 'git_commit').annotations.destructiveHint, true);
   const invoke = (name, args = {}) => client.callTool({ name, arguments: { repo_path: repo, ...args } });
@@ -42,12 +42,16 @@ test('bundled server negotiates MCP, advertises schemas and performs a full comm
   assert.equal(badLimit.isError, true);
   // Bad input must not terminate the server.
   assert.equal((await invoke('git_log', { limit: 1 })).structuredContent.commits[0].subject, 'feat: MCP workflow');
+  assert.equal((await invoke('git_tag', { action: 'create', name: 'mcp-v1' })).isError, undefined);
+  assert.match((await invoke('git_describe')).structuredContent.output, /mcp-v1/);
+  assert.match((await invoke('git_blame', { path: 'hello.txt' })).structuredContent.output, /MCP workflow/);
+  assert.equal((await invoke('git_reset', { expected_head: committed.structuredContent.commit, mode: 'hard' })).isError, true);
 });
 
 test('bundled server enforces read-only configuration over MCP', async t => {
   const { repo } = await fixture(t);
   const client = new Client({ name: 'read-only-test', version: '1.0.0' });
-  const transport = new StdioClientTransport({ command: process.execPath, args: [fileURLToPath(new URL('../plugins/git-mcp/dist/server.cjs', import.meta.url))], env: { GIT_MCP_READ_ONLY: 'true', GIT_MCP_ROOTS: repo }, stderr: 'pipe' });
+  const transport = new StdioClientTransport({ command: process.execPath, args: [fileURLToPath(new URL('../plugins/git-companion/dist/server.cjs', import.meta.url))], env: { GIT_MCP_READ_ONLY: 'true', GIT_MCP_ROOTS: repo }, stderr: 'pipe' });
   t.after(() => client.close());
   await client.connect(transport);
   const denied = await client.callTool({ name: 'git_create_branch', arguments: { repo_path: repo, name: 'denied' } });

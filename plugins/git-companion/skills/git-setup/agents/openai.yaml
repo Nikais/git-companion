@@ -1,0 +1,4 @@
+interface:
+  display_name: "Set up Git repositories"
+  short_description: "Initialize, clone and configure local repositories"
+  default_prompt: "Use $git-setup to set up the requested Git repository and its local configuration."

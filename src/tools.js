@@ -1,8 +1,15 @@
 import { z } from 'zod';
 
-const repo_path = z.string().min(1).describe('Absolute path inside the target Git working tree. All file paths are relative to its root.');
-const paths = z.array(z.string().min(1).max(4096)).max(100).optional().describe('Literal repository-relative file/directory paths; no globs. Omit to read all tracked changes.');
-const ref = z.string().min(1).max(1024);
+const text = z.string().min(1).max(10000).refine(value => !value.includes('\0'), 'NUL is not accepted');
+const repo_path = text.describe('Absolute path inside the target Git working tree; for init/clone, the destination directory.');
+const paths = z.array(text).max(100).optional().describe('Literal repository-relative file/directory paths; no globs. Omit to read all tracked changes.');
+const ref = text;
+const flag = z.boolean().default(false);
+const limit = z.number().int().min(1).max(100).default(20);
+const expected_head = ref.describe('Expected current HEAD hash; read git_status immediately before changing history.');
+const discard_changes = flag.describe('Explicit authorization to discard the selected local data.');
+const action = values => z.enum(values);
+const flow = { action: action(['start', 'continue', 'abort', 'skip']).default('start') };
 const read = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false };
 const write = { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false };
 
@@ -17,4 +24,51 @@ export const tools = [
   { name: 'git_commit', description: 'Create a local unsigned commit of the reviewed index. Requires its current fingerprint from git_diff (staged). Hooks are disabled; run required project checks separately. Does not push or amend.', schema: { repo_path, message: z.string().min(1).max(10000), expected_index_fingerprint: z.string().regex(/^[a-f0-9]{64}$/) }, annotations: write },
   { name: 'git_create_branch', description: 'Create a new local branch at an existing commit without switching to it or overwriting another branch.', schema: { repo_path, name: ref, start_point: ref.optional() }, annotations: write },
   { name: 'git_switch_branch', description: 'Switch to an existing local branch only with a clean index and working tree. Configured checkout filters may execute programs or access the network. Does not force, create or guess remote branches.', schema: { repo_path, name: ref }, annotations: { ...write, openWorldHint: true } },
+  { name: 'git_init', description: 'Initialize a repository in a new or empty destination directory. Does not reinitialize existing projects.', schema: { repo_path, initial_branch: ref.default('main') }, annotations: write },
+  { name: 'git_clone', description: 'Clone an explicit URL or local source into a new or empty destination. Does not recursively clone submodules.', schema: { repo_path, url: text, branch: ref.optional(), depth: z.number().int().min(1).max(1000000).optional() }, annotations: { ...write, openWorldHint: true } },
+  { name: 'git_remote', description: 'List or explicitly add, remove, rename or set the URL of a named remote.', schema: { repo_path, action: action(['list', 'add', 'remove', 'rename', 'set_url']).default('list'), name: ref.optional(), url: text.optional(), new_name: ref.optional() }, annotations: { ...write, openWorldHint: true } },
+  { name: 'git_fetch', description: 'Fetch from one configured remote, optionally one branch. Pruning and tags require explicit flags.', schema: { repo_path, remote: ref, branch: ref.optional(), prune: flag, tags: flag }, annotations: { ...write, openWorldHint: true } },
+  { name: 'git_pull', description: 'Fetch one remote branch and integrate it into a clean working tree. Defaults to fast-forward only; merge/rebase must be selected explicitly.', schema: { repo_path, remote: ref, branch: ref, strategy: action(['ff_only', 'merge', 'rebase']).default('ff_only') }, annotations: { ...write, openWorldHint: true } },
+  { name: 'git_push', description: 'Push one explicit source to one remote branch or tag. No unrestricted force: replacement/deletion requires the expected remote object and force-with-lease.', schema: { repo_path, remote: ref, branch: ref.describe('Destination name within refs/heads or refs/tags.'), target_type: action(['branch', 'tag']).default('branch'), source: ref.default('HEAD'), set_upstream: flag, delete: flag, expected_remote_oid: z.string().regex(/^[a-f0-9]{40}([a-f0-9]{24})?$/).optional(), force_with_lease: flag, dry_run: flag }, annotations: { ...write, openWorldHint: true } },
+  { name: 'git_ls_remote', description: 'Read current remote branch/tag object IDs without updating tracking refs. Use exact object IDs for push leases.', schema: { repo_path, remote: ref, kind: action(['all', 'heads', 'tags']).default('all') }, annotations: { ...read, openWorldHint: true } },
+  { name: 'git_merge', description: 'Start, continue or abort a merge. Starts on a clean tree; defaults to fast-forward only. Conflicts remain available for inspection.', schema: { repo_path, action: action(['start', 'continue', 'abort']).default('start'), ref: ref.optional(), strategy: action(['ff_only', 'merge', 'no_ff', 'squash']).default('ff_only') }, annotations: write },
+  { name: 'git_rebase', description: 'Start a noninteractive rebase on a clean tree, or continue/abort/skip it. Starting rewrites local history and requires expected_head.', schema: { repo_path, ...flow, upstream: ref.optional(), onto: ref.optional(), expected_head: expected_head.optional() }, annotations: write },
+  { name: 'git_cherry_pick', description: 'Apply selected commits in order, or continue/abort/skip a stopped cherry-pick. Does not auto-stash.', schema: { repo_path, ...flow, commits: z.array(ref).min(1).max(100).optional(), mainline: z.number().int().min(1).max(100).optional() }, annotations: write },
+  { name: 'git_revert', description: 'Create inverse commits, or continue/abort/skip a stopped revert. Merge commits need an explicit mainline.', schema: { repo_path, ...flow, commits: z.array(ref).min(1).max(100).optional(), mainline: z.number().int().min(1).max(100).optional() }, annotations: write },
+  { name: 'git_stash', description: 'List/show, push, apply, pop, drop or clear stashes. Drop/pop require expected_stash; clear requires discard_changes.', schema: { repo_path, action: action(['list', 'show', 'push', 'apply', 'pop', 'drop', 'clear']).default('list'), ref: z.string().regex(/^stash@\{\d+\}$/).default('stash@{0}'), message: text.optional(), paths, include_untracked: flag, restore_index: flag, expected_stash: ref.optional(), discard_changes }, annotations: write },
+  { name: 'git_tag', description: 'List, create or delete local lightweight/annotated unsigned tags. Existing tags are never overwritten.', schema: { repo_path, action: action(['list', 'create', 'delete']).default('list'), name: ref.optional(), ref: ref.default('HEAD'), message: text.optional() }, annotations: write },
+  { name: 'git_blame', description: 'Read line attribution for one literal tracked path at a commit; optionally restrict line numbers.', schema: { repo_path, path: text, ref: ref.default('HEAD'), start_line: z.number().int().min(1).optional(), end_line: z.number().int().min(1).optional() }, annotations: read },
+  { name: 'git_worktree', description: 'List, add, remove, move, lock, unlock or prune worktrees. Destinations obey GIT_MCP_ROOTS; removal never forces dirty trees.', schema: { repo_path, action: action(['list', 'add', 'remove', 'move', 'lock', 'unlock', 'prune']).default('list'), path: text.optional(), destination: text.optional(), branch: ref.optional(), new_branch: ref.optional(), ref: ref.default('HEAD'), reason: text.optional(), dry_run: z.boolean().default(true) }, annotations: write },
+  { name: 'git_submodule', description: 'Read status or add/init/update/sync/deinit explicitly selected submodules. No foreach, shell commands, custom update commands or force.', schema: { repo_path, action: action(['status', 'add', 'init', 'update', 'sync', 'deinit']).default('status'), paths, url: text.optional(), path: text.optional(), recursive: flag, allow_file: flag }, annotations: { ...write, openWorldHint: true } },
+  { name: 'git_reset', description: 'Reset to a reviewed commit using soft/mixed/hard mode. Requires expected_head; hard additionally requires discard_changes.', schema: { repo_path, ref: ref.default('HEAD'), mode: action(['soft', 'mixed', 'hard']).default('mixed'), expected_head, discard_changes }, annotations: write },
+  { name: 'git_clean', description: 'Preview removal of explicitly selected untracked paths. Execution requires dry_run=false, discard_changes=true and the preview fingerprint.', schema: { repo_path, paths: paths.unwrap().min(1), directories: flag, include_ignored: flag, dry_run: z.boolean().default(true), discard_changes, expected_preview: ref.optional() }, annotations: write },
+  { name: 'git_amend', description: 'Amend the local HEAD with a reviewed index. Requires expected_head and expected_index_fingerprint; unsigned and noninteractive.', schema: { repo_path, expected_head, expected_index_fingerprint: z.string().regex(/^[a-f0-9]{64}$/), message: text.optional() }, annotations: write },
+  { name: 'git_delete_branch', description: 'Delete a local branch, normally only when merged. Force requires expected_head of the branch being deleted.', schema: { repo_path, name: ref, force: flag, expected_head: expected_head.optional() }, annotations: write },
+  { name: 'git_rename_branch', description: 'Rename a local branch without overwriting another branch.', schema: { repo_path, name: ref, new_name: ref }, annotations: write },
+  { name: 'git_restore', description: 'Restore explicit paths from a commit or index. Working-file replacement requires discard_changes. Can restore the index, working files or both.', schema: { repo_path, paths: paths.unwrap().min(1), source: ref.optional(), staged: flag, worktree: z.boolean().default(true), discard_changes }, annotations: write },
+  { name: 'git_rm', description: 'Remove explicit tracked paths from working files/index, or only the index with cached=true. Never forces modified files.', schema: { repo_path, paths: paths.unwrap().min(1), cached: flag, recursive: flag }, annotations: write },
+  { name: 'git_mv', description: 'Move a tracked path and stage its rename, without overwriting an existing destination.', schema: { repo_path, source: text, destination: text }, annotations: { ...write, openWorldHint: true } },
+  { name: 'git_checkout', description: 'Checkout a local branch or detach at a commit. Force requires discard_changes and expected_head. For file restoration use git_restore.', schema: { repo_path, ref, detach: flag, force: flag, discard_changes, expected_head: expected_head.optional() }, annotations: { ...write, openWorldHint: true } },
+  { name: 'git_reflog', description: 'Read bounded reflog entries to locate previous local history.', schema: { repo_path, ref: ref.default('HEAD'), limit }, annotations: read },
+  { name: 'git_ls_files', description: 'List tracked files and optionally untracked nonignored paths as literal names.', schema: { repo_path, paths, untracked: flag }, annotations: read },
+  { name: 'git_grep', description: 'Search tracked files using a fixed string by default, optionally a regular expression or a committed revision.', schema: { repo_path, pattern: text, paths, ref: ref.optional(), regex: flag, ignore_case: flag }, annotations: read },
+  { name: 'git_describe', description: 'Describe a commit using the nearest reachable tag and an abbreviated hash.', schema: { repo_path, ref: ref.default('HEAD'), tags: z.boolean().default(true) }, annotations: read },
+  { name: 'git_merge_base', description: 'Find common ancestors of two validated commits.', schema: { repo_path, base: ref, head: ref.default('HEAD') }, annotations: read },
+  { name: 'git_config', description: 'List/get/set/unset repository-local config only. No arbitrary scope, include files, aliases or command-executing config writes.', schema: { repo_path, action: action(['list', 'get', 'set', 'unset']).default('list'), key: text.optional(), value: text.optional() }, annotations: write },
+  { name: 'git_apply', description: 'Check or apply a supplied patch to working files or the index. Never accepts unsafe paths; check=true is read-only.', schema: { repo_path, patch: z.string().min(1).max(400000), check: z.boolean().default(true), cached: flag, reverse: flag }, annotations: write },
+  { name: 'git_bisect', description: 'Start/manual good/bad/skip/reset/log for binary-search debugging. Does not execute a test command.', schema: { repo_path, action: action(['start', 'good', 'bad', 'skip', 'reset', 'log']), good: ref.optional(), bad: ref.optional(), ref: ref.optional() }, annotations: write },
+  { name: 'git_notes', description: 'List/show/add/remove notes in the default local notes ref. Existing notes are never overwritten.', schema: { repo_path, action: action(['list', 'show', 'add', 'remove']).default('list'), ref: ref.default('HEAD'), message: text.optional() }, annotations: write },
 ];
+
+const definitions = new Map(tools.map(tool => [tool.name, { ...tool, input: z.object(tool.schema).strict() }]));
+export const toolDefinition = name => definitions.get(name);
+
+// Multi-action tools are conservatively advertised as writes; enforce the actual action here.
+export function isReadOnly(name, args) {
+  if (definitions.get(name)?.annotations.readOnlyHint) return true;
+  if (name === 'git_clean') return args.dry_run !== false;
+  if (name === 'git_apply') return args.check !== false;
+  if (name === 'git_worktree' && args.action === 'prune') return args.dry_run !== false;
+  const actions = { git_remote: ['list'], git_stash: ['list', 'show'], git_tag: ['list'], git_worktree: ['list'], git_submodule: ['status'], git_config: ['list', 'get'], git_bisect: ['log'], git_notes: ['list', 'show'] };
+  return actions[name]?.includes(args.action ?? (name === 'git_submodule' ? 'status' : 'list')) ?? false;
+}

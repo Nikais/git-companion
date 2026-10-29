@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage local Git history"
+  short_description: "Amend, recover and manage branches, tags and notes"
+  default_prompt: "Use $git-history to perform the requested local Git history or reference operation."

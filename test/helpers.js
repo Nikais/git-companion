@@ -11,12 +11,12 @@ export function git(repo, ...args) {
 }
 
 export async function fixture(t, { initial = true, ...options } = {}) {
-  const repo = await mkdtemp(path.join(tmpdir(), 'git-mcp-test-'));
+  const repo = await mkdtemp(path.join(tmpdir(), 'git-companion-test-'));
   const service = new GitService(options);
   t.after(async () => { await service.close(); await rm(repo, { recursive: true, force: true }); });
   git(repo, 'init', '-b', 'main');
-  git(repo, 'config', 'user.name', 'Git MCP Test');
-  git(repo, 'config', 'user.email', 'git-mcp@example.invalid');
+  git(repo, 'config', 'user.name', 'Git Companion Test');
+  git(repo, 'config', 'user.email', 'git-companion@example.invalid');
   if (initial) {
     await writeFile(path.join(repo, 'hello.txt'), 'hello\n');
     git(repo, 'add', '--', 'hello.txt');

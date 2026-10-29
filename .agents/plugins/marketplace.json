@@ -1,14 +1,14 @@
 {
-  "name": "git-mcp-local",
+  "name": "git-companion-local",
   "interface": {
-    "displayName": "Git MCP — Local"
+    "displayName": "Git Companion — Local"
   },
   "plugins": [
     {
-      "name": "git-mcp",
+      "name": "git-companion",
       "source": {
         "source": "local",
-        "path": "./plugins/git-mcp"
+        "path": "./plugins/git-companion"
       },
       "policy": {
         "installation": "AVAILABLE",

@@ -1,4 +1,4 @@
 interface:
   display_name: "Inspect Git repository"
-  short_description: "Understand changes, branches and commit history"
+  short_description: "Inspect state, trace history, search and bisect"
   default_prompt: "Use $git-inspect to explain the state and recent changes in this repository."

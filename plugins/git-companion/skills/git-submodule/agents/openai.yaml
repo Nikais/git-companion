@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage Git submodules"
+  short_description: "Inspect and update explicitly selected submodules"
+  default_prompt: "Use $git-submodule to perform the requested Git submodule operation."

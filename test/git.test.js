@@ -136,7 +136,7 @@ test('rejects path escapes, metadata and option-like revisions', async t => {
   for (const file of ['../outside', repo, '.', '.git/config', 'a\0b']) {
     await assert.rejects(call('git_add', { paths: [file] }), { code: 'INVALID_INPUT' });
   }
-  for (const ref of ['--help', '--output=/tmp/git-mcp-unsafe', 'HEAD\0oops']) {
+  for (const ref of ['--help', '--output=/tmp/git-companion-unsafe', 'HEAD\0oops']) {
     await assert.rejects(call('git_show', { ref }), { code: 'INVALID_INPUT' });
   }
   for (const name of ['--help', '@{-1}', 'bad\0branch']) {
@@ -168,7 +168,7 @@ test('inherited Git environment cannot redirect operations', async t => {
 test('commit hooks and external diff commands are not executed', async t => {
   const { repo, call } = await fixture(t);
   git(repo, 'config', 'core.hooksPath', path.join(repo, 'missing-hooks'));
-  git(repo, 'config', 'diff.external', 'git-mcp-command-that-does-not-exist');
+  git(repo, 'config', 'diff.external', 'git-companion-command-that-does-not-exist');
   await writeFile(path.join(repo, 'hello.txt'), 'changed');
   assert.match((await call('git_diff')).diff, /changed/);
   await call('git_add', { paths: ['hello.txt'] });

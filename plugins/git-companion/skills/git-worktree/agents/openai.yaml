@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage Git worktrees"
+  short_description: "Create, move, lock and remove linked worktrees"
+  default_prompt: "Use $git-worktree to perform the requested linked Git worktree operation."

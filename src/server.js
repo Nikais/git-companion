@@ -11,7 +11,7 @@ async function main() {
     throw new Error('GIT_MCP_READ_ONLY must be true, false, 1 or 0.');
   }
   const service = new GitService({ roots, readOnly: ['true', '1'].includes(process.env.GIT_MCP_READ_ONLY) });
-  const server = new McpServer({ name: 'git-mcp', version: '0.1.0' });
+  const server = new McpServer({ name: 'git-companion', version: '0.2.0' });
 
   for (const tool of tools) {
     server.registerTool(tool.name, { description: tool.description, inputSchema: tool.schema, annotations: tool.annotations }, async args => {

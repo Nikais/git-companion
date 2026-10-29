@@ -1,0 +1,4 @@
+interface:
+  display_name: "Integrate Git commits"
+  short_description: "Merge, rebase, cherry-pick and revert commits"
+  default_prompt: "Use $git-integrate to integrate the requested Git changes and handle any conflicts."

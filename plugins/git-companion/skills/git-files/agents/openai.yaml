@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage Git working files"
+  short_description: "Restore, move, remove, clean and patch Git files"
+  default_prompt: "Use $git-files to perform the requested file-level Git operation."

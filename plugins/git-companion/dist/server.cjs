@@ -2189,14 +2189,14 @@ var require_resolve = __commonJS({
       "enum",
       "const"
     ]);
-    function inlineRef(schema, limit = true) {
+    function inlineRef(schema, limit2 = true) {
       if (typeof schema == "boolean")
         return true;
-      if (limit === true)
+      if (limit2 === true)
         return !hasRef(schema);
-      if (!limit)
+      if (!limit2)
         return false;
-      return countKeys(schema) <= limit;
+      return countKeys(schema) <= limit2;
     }
     exports2.inlineRef = inlineRef;
     var REF_KEYWORDS = /* @__PURE__ */ new Set([
@@ -3261,9 +3261,9 @@ var require_utils = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path3) {
-      let input2 = path3;
-      const output2 = [];
+    function removeDotSegments(path4) {
+      let input2 = path4;
+      const output3 = [];
       let nextSlash = -1;
       let len = 0;
       while (len = input2.length) {
@@ -3271,10 +3271,10 @@ var require_utils = __commonJS({
           if (input2 === ".") {
             break;
           } else if (input2 === "/") {
-            output2.push("/");
+            output3.push("/");
             break;
           } else {
-            output2.push(input2);
+            output3.push(input2);
             break;
           }
         } else if (len === 2) {
@@ -3287,16 +3287,16 @@ var require_utils = __commonJS({
             }
           } else if (input2[0] === "/") {
             if (input2[1] === "." || input2[1] === "/") {
-              output2.push("/");
+              output3.push("/");
               break;
             }
           }
         } else if (len === 3) {
           if (input2 === "/..") {
-            if (output2.length !== 0) {
-              output2.pop();
+            if (output3.length !== 0) {
+              output3.pop();
             }
-            output2.push("/");
+            output3.push("/");
             break;
           }
         }
@@ -3318,8 +3318,8 @@ var require_utils = __commonJS({
             } else if (input2[2] === ".") {
               if (input2[3] === "/") {
                 input2 = input2.slice(3);
-                if (output2.length !== 0) {
-                  output2.pop();
+                if (output3.length !== 0) {
+                  output3.pop();
                 }
                 continue;
               }
@@ -3327,45 +3327,45 @@ var require_utils = __commonJS({
           }
         }
         if ((nextSlash = input2.indexOf("/", 1)) === -1) {
-          output2.push(input2);
+          output3.push(input2);
           break;
         } else {
-          output2.push(input2.slice(0, nextSlash));
+          output3.push(input2.slice(0, nextSlash));
           input2 = input2.slice(nextSlash);
         }
       }
-      return output2.join("");
+      return output3.join("");
     }
-    function removeDotSegmentsRelative(path3) {
-      if (path3 === "" || path3[0] === "/") {
-        return removeDotSegments(path3);
+    function removeDotSegmentsRelative(path4) {
+      if (path4 === "" || path4[0] === "/") {
+        return removeDotSegments(path4);
       }
-      const segments = path3.split("/");
+      const segments = path4.split("/");
       const last = segments.length - 1;
-      const output2 = [];
+      const output3 = [];
       let trailingDirectory = false;
       for (let i = 0; i <= last; i++) {
         const segment = segments[i];
         if (segment === "." || segment === "..") {
           if (segment === "..") {
-            if (output2.length !== 0 && output2[output2.length - 1] !== "..") {
-              output2.pop();
+            if (output3.length !== 0 && output3[output3.length - 1] !== "..") {
+              output3.pop();
             } else {
-              output2.push("..");
+              output3.push("..");
             }
           }
           trailingDirectory = i === last;
         } else {
-          output2.push(segment);
+          output3.push(segment);
         }
       }
-      if (trailingDirectory && output2[output2.length - 1] !== "..") {
-        output2.push("");
+      if (trailingDirectory && output3[output3.length - 1] !== "..") {
+        output3.push("");
       }
-      if (output2.length === 0 || output2[0] === "" || output2[0].includes(":")) {
-        output2.unshift(".");
+      if (output3.length === 0 || output3[0] === "" || output3[0].includes(":")) {
+        output3.unshift(".");
       }
-      return output2.join("/");
+      return output3.join("/");
     }
     var HOST_DELIMS = { "@": "%40", "/": "%2F", "?": "%3F", "#": "%23", ":": "%3A" };
     var HOST_DELIM_RE = /[@/?#:]/g;
@@ -3379,7 +3379,7 @@ var require_utils = __commonJS({
       if (input2.indexOf("%") === -1) {
         return input2;
       }
-      let output2 = "";
+      let output3 = "";
       for (let i = 0; i < input2.length; i++) {
         if (input2[i] === "%" && i + 2 < input2.length) {
           const hex3 = input2.slice(i + 1, i + 3);
@@ -3387,20 +3387,20 @@ var require_utils = __commonJS({
             const normalizedHex = hex3.toUpperCase();
             const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
             if (decodeUnreserved && isUnreserved(decoded)) {
-              output2 += decoded;
+              output3 += decoded;
             } else {
-              output2 += "%" + normalizedHex;
+              output3 += "%" + normalizedHex;
             }
             i += 2;
             continue;
           }
         }
-        output2 += input2[i];
+        output3 += input2[i];
       }
-      return output2;
+      return output3;
     }
     function normalizePathEncoding(input2) {
-      let output2 = "";
+      let output3 = "";
       for (let i = 0; i < input2.length; i++) {
         const ch = input2[i];
         if (ch === "%" && i + 2 < input2.length) {
@@ -3409,46 +3409,46 @@ var require_utils = __commonJS({
             const normalizedHex = hex3.toUpperCase();
             const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
             if (decoded !== "." && isUnreserved(decoded)) {
-              output2 += decoded;
+              output3 += decoded;
             } else {
-              output2 += "%" + normalizedHex;
+              output3 += "%" + normalizedHex;
             }
             i += 2;
             continue;
           }
         }
         if (isPathCharacter(ch)) {
-          output2 += ch;
+          output3 += ch;
         } else {
           const code = input2.charCodeAt(i);
           if (code < 128) {
-            output2 += isEscapeSafe(code) ? ch : BYTE_HEX[code];
+            output3 += isEscapeSafe(code) ? ch : BYTE_HEX[code];
           } else if (code < 55296 || code > 57343) {
-            output2 += percentEncodeNonAscii(code);
+            output3 += percentEncodeNonAscii(code);
           } else if (code <= 56319 && i + 1 < input2.length) {
             const low = input2.charCodeAt(i + 1);
             if (low >= 56320 && low <= 57343) {
-              output2 += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
+              output3 += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
               i++;
             } else {
-              output2 += percentEncodeNonAscii(65533);
+              output3 += percentEncodeNonAscii(65533);
             }
           } else {
-            output2 += percentEncodeNonAscii(65533);
+            output3 += percentEncodeNonAscii(65533);
           }
         }
       }
-      return output2;
+      return output3;
     }
     function serializePathEncoding(input2, pathNoScheme = false) {
-      let output2 = "";
+      let output3 = "";
       let firstSegment = pathNoScheme && input2[0] !== "/";
       for (let i = 0; i < input2.length; i++) {
         const ch = input2[i];
         if (ch === "%" && i + 2 < input2.length) {
           const hex3 = input2.slice(i + 1, i + 3);
           if (isHexPair(hex3)) {
-            output2 += "%" + hex3.toUpperCase();
+            output3 += "%" + hex3.toUpperCase();
             i += 2;
             continue;
           }
@@ -3457,62 +3457,62 @@ var require_utils = __commonJS({
           firstSegment = false;
         }
         if (isPathCharacter(ch) && (ch !== ":" || !firstSegment)) {
-          output2 += ch;
+          output3 += ch;
         } else {
           const code = input2.charCodeAt(i);
           if (code < 128) {
-            output2 += BYTE_HEX[code];
+            output3 += BYTE_HEX[code];
           } else if (code < 55296 || code > 57343) {
-            output2 += percentEncodeNonAscii(code);
+            output3 += percentEncodeNonAscii(code);
           } else if (code <= 56319 && i + 1 < input2.length) {
             const low = input2.charCodeAt(i + 1);
             if (low >= 56320 && low <= 57343) {
-              output2 += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
+              output3 += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
               i++;
             } else {
-              output2 += percentEncodeNonAscii(65533);
+              output3 += percentEncodeNonAscii(65533);
             }
           } else {
-            output2 += percentEncodeNonAscii(65533);
+            output3 += percentEncodeNonAscii(65533);
           }
         }
       }
-      return output2;
+      return output3;
     }
     function encodeComponent(input2, isAllowed) {
-      let output2 = "";
+      let output3 = "";
       for (let i = 0; i < input2.length; i++) {
         const ch = input2[i];
         if (ch === "%" && i + 2 < input2.length) {
           const hex3 = input2.slice(i + 1, i + 3);
           if (isHexPair(hex3)) {
-            output2 += "%" + hex3.toUpperCase();
+            output3 += "%" + hex3.toUpperCase();
             i += 2;
             continue;
           }
         }
         if (isAllowed(ch)) {
-          output2 += ch;
+          output3 += ch;
         } else {
           const code = input2.charCodeAt(i);
           if (code < 128) {
-            output2 += BYTE_HEX[code];
+            output3 += BYTE_HEX[code];
           } else if (code < 55296 || code > 57343) {
-            output2 += percentEncodeNonAscii(code);
+            output3 += percentEncodeNonAscii(code);
           } else if (code <= 56319 && i + 1 < input2.length) {
             const low = input2.charCodeAt(i + 1);
             if (low >= 56320 && low <= 57343) {
-              output2 += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
+              output3 += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
               i++;
             } else {
-              output2 += percentEncodeNonAscii(65533);
+              output3 += percentEncodeNonAscii(65533);
             }
           } else {
-            output2 += percentEncodeNonAscii(65533);
+            output3 += percentEncodeNonAscii(65533);
           }
         }
       }
-      return output2;
+      return output3;
     }
     function encodeUserinfo(input2) {
       return encodeComponent(input2, isUserinfoCharacter);
@@ -3527,7 +3527,7 @@ var require_utils = __commonJS({
       return cp >= 48 && cp <= 57 || cp >= 65 && cp <= 90 || cp >= 97 && cp <= 122 || cp === 42 || cp === 43 || cp === 45 || cp === 46 || cp === 47 || cp === 64 || cp === 95;
     }
     function normalizeQueryFragmentEncoding(input2) {
-      let output2 = "";
+      let output3 = "";
       for (let i = 0; i < input2.length; i++) {
         const ch = input2[i];
         if (ch === "%" && i + 2 < input2.length) {
@@ -3536,51 +3536,51 @@ var require_utils = __commonJS({
             const normalizedHex = hex3.toUpperCase();
             const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
             if (isUnreserved(decoded)) {
-              output2 += decoded;
+              output3 += decoded;
             } else {
-              output2 += "%" + normalizedHex;
+              output3 += "%" + normalizedHex;
             }
             i += 2;
             continue;
           }
         }
         if (isQueryFragmentCharacter(ch)) {
-          output2 += ch;
+          output3 += ch;
         } else {
           const code = input2.charCodeAt(i);
           if (code < 128) {
-            output2 += isEscapeSafe(code) ? ch : BYTE_HEX[code];
+            output3 += isEscapeSafe(code) ? ch : BYTE_HEX[code];
           } else if (code < 55296 || code > 57343) {
-            output2 += percentEncodeNonAscii(code);
+            output3 += percentEncodeNonAscii(code);
           } else if (code <= 56319 && i + 1 < input2.length) {
             const low = input2.charCodeAt(i + 1);
             if (low >= 56320 && low <= 57343) {
-              output2 += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
+              output3 += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
               i++;
             } else {
-              output2 += percentEncodeNonAscii(65533);
+              output3 += percentEncodeNonAscii(65533);
             }
           } else {
-            output2 += percentEncodeNonAscii(65533);
+            output3 += percentEncodeNonAscii(65533);
           }
         }
       }
-      return output2;
+      return output3;
     }
     function escapePreservingEscapes(input2) {
-      let output2 = "";
+      let output3 = "";
       for (let i = 0; i < input2.length; i++) {
         if (input2[i] === "%" && i + 2 < input2.length) {
           const hex3 = input2.slice(i + 1, i + 3);
           if (isHexPair(hex3)) {
-            output2 += "%" + hex3.toUpperCase();
+            output3 += "%" + hex3.toUpperCase();
             i += 2;
             continue;
           }
         }
-        output2 += escape(input2[i]);
+        output3 += escape(input2[i]);
       }
-      return output2;
+      return output3;
     }
     function recomposeAuthority(component) {
       const uriTokens = [];
@@ -3703,8 +3703,8 @@ var require_schemes = __commonJS({
       }
       if (wsComponent.resourceName) {
         const queryIndex = wsComponent.resourceName.indexOf("?");
-        const path3 = queryIndex === -1 ? wsComponent.resourceName : wsComponent.resourceName.slice(0, queryIndex);
-        wsComponent.path = path3 && path3 !== "/" ? path3 : void 0;
+        const path4 = queryIndex === -1 ? wsComponent.resourceName : wsComponent.resourceName.slice(0, queryIndex);
+        wsComponent.path = path4 && path4 !== "/" ? path4 : void 0;
         wsComponent.query = queryIndex === -1 ? void 0 : wsComponent.resourceName.slice(queryIndex + 1);
         wsComponent.resourceName = void 0;
       }
@@ -4074,18 +4074,18 @@ var require_fast_uri = __commonJS({
         return true;
       }
       if (!options.unicodeSupport && (!schemeHandler || !schemeHandler.unicodeSupport) && parsed.host && !isIPLiteral(parsed.host) && (options.domainHost || schemeHandler && schemeHandler.domainHost) && isIP === false && nonSimpleDomain(parsed.host)) {
-        let url2;
+        let url3;
         try {
-          url2 = new URL("http://" + parsed.host);
+          url3 = new URL("http://" + parsed.host);
         } catch (e) {
           parsed.error = parsed.error || "Host's domain name can not be converted to ASCII: " + e;
           return true;
         }
-        if (!isHostOnlyURL(url2)) {
+        if (!isHostOnlyURL(url3)) {
           parsed.error = parsed.error || MALFORMED_HOST_ERROR;
           return true;
         }
-        parsed.host = url2.hostname;
+        parsed.host = url3.hostname;
       }
       return false;
     }
@@ -4094,8 +4094,8 @@ var require_fast_uri = __commonJS({
         parsed.host && isIP === false && !isIPLiteral(parsed.host) && (options.domainHost || schemeHandler && schemeHandler.domainHost) && FORBIDDEN_DOMAIN_HOST_CHARACTER.test(parsed.host)
       );
     }
-    function isHostOnlyURL(url2) {
-      return url2.username === "" && url2.password === "" && url2.port === "" && url2.pathname === "/" && url2.search === "" && url2.hash === "" && url2.hostname !== "";
+    function isHostOnlyURL(url3) {
+      return url3.username === "" && url3.password === "" && url3.port === "" && url3.pathname === "/" && url3.search === "" && url3.hash === "" && url3.hostname !== "";
     }
     function parseWithStatus(uri, opts) {
       const options = Object.assign({}, opts);
@@ -4618,8 +4618,8 @@ var require_core = __commonJS({
         }
       }
       // add "vocabulary" - a collection of keywords
-      addVocabulary(definitions) {
-        for (const def of definitions)
+      addVocabulary(definitions2) {
+        for (const def of definitions2)
           this.addKeyword(def);
         return this;
       }
@@ -4680,7 +4680,7 @@ var require_core = __commonJS({
       errorsText(errors = this.errors, { separator = ", ", dataVar = "data" } = {}) {
         if (!errors || errors.length === 0)
           return "No errors";
-        return errors.map((e) => `${dataVar}${e.instancePath} ${e.message}`).reduce((text, msg) => text + separator + msg);
+        return errors.map((e) => `${dataVar}${e.instancePath} ${e.message}`).reduce((text2, msg) => text2 + separator + msg);
       }
       $dataMetaSchema(metaSchema, keywordsJsonPointers) {
         const rules = this.RULES.all;
@@ -6617,7 +6617,7 @@ var require_discriminator = __commonJS({
     var util_1 = require_util();
     var error62 = {
       message: ({ params: { discrError, tagName } }) => discrError === types_1.DiscrError.Tag ? `tag "${tagName}" must be string` : `value of tag "${tagName}" must be in oneOf`,
-      params: ({ params: { discrError, tag, tagName } }) => (0, codegen_1._)`{error: ${discrError}, tag: ${tagName}, tagValue: ${tag}}`
+      params: ({ params: { discrError, tag: tag2, tagName } }) => (0, codegen_1._)`{error: ${discrError}, tag: ${tagName}, tagValue: ${tag2}}`
     };
     var def = {
       keyword: "discriminator",
@@ -6638,18 +6638,18 @@ var require_discriminator = __commonJS({
         if (!oneOf)
           throw new Error("discriminator: requires oneOf keyword");
         const valid = gen.let("valid", false);
-        const tag = gen.const("tag", (0, codegen_1._)`${data}${(0, codegen_1.getProperty)(tagName)}`);
-        gen.if((0, codegen_1._)`typeof ${tag} == "string"`, () => validateMapping(), () => cxt.error(false, { discrError: types_1.DiscrError.Tag, tag, tagName }));
+        const tag2 = gen.const("tag", (0, codegen_1._)`${data}${(0, codegen_1.getProperty)(tagName)}`);
+        gen.if((0, codegen_1._)`typeof ${tag2} == "string"`, () => validateMapping(), () => cxt.error(false, { discrError: types_1.DiscrError.Tag, tag: tag2, tagName }));
         cxt.ok(valid);
         function validateMapping() {
           const mapping = getMapping();
           gen.if(false);
           for (const tagValue in mapping) {
-            gen.elseIf((0, codegen_1._)`${tag} === ${tagValue}`);
+            gen.elseIf((0, codegen_1._)`${tag2} === ${tagValue}`);
             gen.assign(valid, applyTagSchema(mapping[tagValue]));
           }
           gen.else();
-          cxt.error(false, { discrError: types_1.DiscrError.Mapping, tag, tagName });
+          cxt.error(false, { discrError: types_1.DiscrError.Mapping, tag: tag2, tagName });
           gen.endIf();
         }
         function applyTagSchema(schemaProp) {
@@ -6683,8 +6683,8 @@ var require_discriminator = __commonJS({
           if (!tagRequired)
             throw new Error(`discriminator: "${tagName}" must be required`);
           return oneOfMapping;
-          function hasRequired({ required: required2 }) {
-            return Array.isArray(required2) && required2.includes(tagName);
+          function hasRequired({ required: required3 }) {
+            return Array.isArray(required3) && required3.includes(tagName);
           }
           function addMappings(sch, i) {
             if (sch.const) {
@@ -7255,7 +7255,7 @@ var require_dist = __commonJS({
 });
 
 // src/server.js
-var import_node_path2 = __toESM(require("node:path"), 1);
+var import_node_path3 = __toESM(require("node:path"), 1);
 
 // node_modules/zod/v3/helpers/util.js
 var util;
@@ -7631,8 +7631,8 @@ function getErrorMap() {
 
 // node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
-  const { data, path: path3, errorMaps, issueData } = params;
-  const fullPath = [...path3, ...issueData.path || []];
+  const { data, path: path4, errorMaps, issueData } = params;
+  const fullPath = [...path4, ...issueData.path || []];
   const fullIssue = {
     ...issueData,
     path: fullPath
@@ -7747,11 +7747,11 @@ var errorUtil;
 
 // node_modules/zod/v3/types.js
 var ParseInputLazyPath = class {
-  constructor(parent, value, path3, key) {
+  constructor(parent, value, path4, key) {
     this._cachedPath = [];
     this.parent = parent;
     this.data = value;
-    this._path = path3;
+    this._path = path4;
     this._key = key;
   }
   get path() {
@@ -11706,10 +11706,10 @@ function mergeDefs(...defs) {
 function cloneDef(schema) {
   return mergeDefs(schema._zod.def);
 }
-function getElementAtPath(obj, path3) {
-  if (!path3)
+function getElementAtPath(obj, path4) {
+  if (!path4)
     return obj;
-  return path3.reduce((acc, key) => acc?.[key], obj);
+  return path4.reduce((acc, key) => acc?.[key], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -12049,11 +12049,11 @@ function explicitlyAborted(x, startIndex = 0) {
   }
   return false;
 }
-function prefixIssues(path3, issues) {
+function prefixIssues(path4, issues) {
   return issues.map((iss) => {
     var _a3;
     (_a3 = iss).path ?? (_a3.path = []);
-    iss.path.unshift(path3);
+    iss.path.unshift(path4);
     return iss;
   });
 }
@@ -12515,16 +12515,16 @@ function flattenError(error62, mapper = (issue2) => issue2.message) {
 }
 function formatError(error62, mapper = (issue2) => issue2.message) {
   const fieldErrors = { _errors: [] };
-  const processError = (error63, path3 = []) => {
+  const processError = (error63, path4 = []) => {
     for (const issue2 of error63.issues) {
       if (issue2.code === "invalid_union" && issue2.errors.length) {
-        issue2.errors.map((issues) => processError({ issues }, [...path3, ...issue2.path]));
+        issue2.errors.map((issues) => processError({ issues }, [...path4, ...issue2.path]));
       } else if (issue2.code === "invalid_key") {
-        processError({ issues: issue2.issues }, [...path3, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path4, ...issue2.path]);
       } else if (issue2.code === "invalid_element") {
-        processError({ issues: issue2.issues }, [...path3, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path4, ...issue2.path]);
       } else {
-        const fullpath = [...path3, ...issue2.path];
+        const fullpath = [...path4, ...issue2.path];
         if (fullpath.length === 0) {
           fieldErrors._errors.push(mapper(issue2));
         } else {
@@ -12563,17 +12563,17 @@ function formatError(error62, mapper = (issue2) => issue2.message) {
 }
 function treeifyError(error62, mapper = (issue2) => issue2.message) {
   const result = { errors: [] };
-  const processError = (error63, path3 = []) => {
+  const processError = (error63, path4 = []) => {
     var _a3;
     for (const issue2 of error63.issues) {
       if (issue2.code === "invalid_union" && issue2.errors.length) {
-        issue2.errors.map((issues) => processError({ issues }, [...path3, ...issue2.path]));
+        issue2.errors.map((issues) => processError({ issues }, [...path4, ...issue2.path]));
       } else if (issue2.code === "invalid_key") {
-        processError({ issues: issue2.issues }, [...path3, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path4, ...issue2.path]);
       } else if (issue2.code === "invalid_element") {
-        processError({ issues: issue2.issues }, [...path3, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path4, ...issue2.path]);
       } else {
-        const fullpath = [...path3, ...issue2.path];
+        const fullpath = [...path4, ...issue2.path];
         if (fullpath.length === 0) {
           result.errors.push(mapper(issue2));
           continue;
@@ -12612,8 +12612,8 @@ function treeifyError(error62, mapper = (issue2) => issue2.message) {
 }
 function toDotPath(_path) {
   const segs = [];
-  const path3 = _path.map((seg) => typeof seg === "object" ? seg.key : seg);
-  for (const seg of path3) {
+  const path4 = _path.map((seg) => typeof seg === "object" ? seg.key : seg);
+  for (const seg of path4) {
     if (typeof seg === "number")
       segs.push(`[${seg}]`);
     else if (typeof seg === "symbol")
@@ -13715,21 +13715,21 @@ var asciiTabOrNewline = /[\t\n\r]/g;
 function stripTabAndNewline(value) {
   return value.replace(asciiTabOrNewline, "");
 }
-function urlHostnameOk(url2, hostname3) {
+function urlHostnameOk(url3, hostname3) {
   hostname3.lastIndex = 0;
-  return hostname3.test(url2.hostname);
+  return hostname3.test(url3.hostname);
 }
-function urlProtocolOk(url2, protocol) {
+function urlProtocolOk(url3, protocol) {
   protocol.lastIndex = 0;
-  return protocol.test(url2.protocol.endsWith(":") ? url2.protocol.slice(0, -1) : url2.protocol);
+  return protocol.test(url3.protocol.endsWith(":") ? url3.protocol.slice(0, -1) : url3.protocol);
 }
 var $ZodURL = /* @__PURE__ */ $constructor("$ZodURL", (inst, def) => {
   $ZodStringFormat.init(inst, def);
   inst._zod.check = (payload) => {
     try {
       const trimmed = payload.value.trim();
-      const url2 = validateURL(trimmed, def);
-      if (url2 === URL_BAD_FORMAT) {
+      const url3 = validateURL(trimmed, def);
+      if (url3 === URL_BAD_FORMAT) {
         payload.issues.push({
           code: "invalid_format",
           format: "url",
@@ -13740,7 +13740,7 @@ var $ZodURL = /* @__PURE__ */ $constructor("$ZodURL", (inst, def) => {
         });
         return;
       }
-      if (url2 === URL_UNPARSEABLE) {
+      if (url3 === URL_UNPARSEABLE) {
         payload.issues.push({
           code: "invalid_format",
           format: "url",
@@ -13750,11 +13750,11 @@ var $ZodURL = /* @__PURE__ */ $constructor("$ZodURL", (inst, def) => {
         });
         return;
       }
-      if (url2 === true) {
+      if (url3 === true) {
         payload.value = stripTabAndNewline(trimmed);
         return;
       }
-      if (def.hostname && !urlHostnameOk(url2, def.hostname)) {
+      if (def.hostname && !urlHostnameOk(url3, def.hostname)) {
         payload.issues.push({
           code: "invalid_format",
           format: "url",
@@ -13765,7 +13765,7 @@ var $ZodURL = /* @__PURE__ */ $constructor("$ZodURL", (inst, def) => {
           continue: !def.abort
         });
       }
-      if (def.protocol && !urlProtocolOk(url2, def.protocol)) {
+      if (def.protocol && !urlProtocolOk(url3, def.protocol)) {
         payload.issues.push({
           code: "invalid_format",
           format: "url",
@@ -13776,7 +13776,7 @@ var $ZodURL = /* @__PURE__ */ $constructor("$ZodURL", (inst, def) => {
           continue: !def.abort
         });
       }
-      payload.value = def.normalize ? url2.href : stripTabAndNewline(trimmed);
+      payload.value = def.normalize ? url3.href : stripTabAndNewline(trimmed);
       return;
     } catch (_) {
       payload.issues.push({
@@ -15418,9 +15418,9 @@ var $ZodTransform = /* @__PURE__ */ $constructor("$ZodTransform", (inst, def) =>
     }
     const _out = def.transform(payload.value, payload);
     if (ctx.async) {
-      const output2 = _out instanceof Promise ? _out : Promise.resolve(_out);
-      return output2.then((output3) => {
-        payload.value = output3;
+      const output3 = _out instanceof Promise ? _out : Promise.resolve(_out);
+      return output3.then((output4) => {
+        payload.value = output4;
         return payload;
       });
     }
@@ -15870,12 +15870,12 @@ var $ZodFunction = /* @__PURE__ */ $constructor("$ZodFunction", (inst, def) => {
       output: inst._def.output
     });
   };
-  inst.output = (output2) => {
+  inst.output = (output3) => {
     const F = inst.constructor;
     return new F({
       type: "function",
       input: inst._def.input,
-      output: output2
+      output: output3
     });
   };
   return inst;
@@ -20239,8 +20239,8 @@ function ko_default() {
 }
 
 // node_modules/zod/v4/locales/lt.js
-var capitalizeFirstCharacter = (text) => {
-  return text.charAt(0).toUpperCase() + text.slice(1);
+var capitalizeFirstCharacter = (text2) => {
+  return text2.charAt(0).toUpperCase() + text2.slice(1);
 };
 function getUnitTypeFromNumber(number4) {
   const abs = Math.abs(number4);
@@ -26740,7 +26740,7 @@ function foldObjects(members2) {
     objects.push(member);
   }
   const properties = {};
-  const required2 = /* @__PURE__ */ new Set();
+  const required3 = /* @__PURE__ */ new Set();
   for (const object3 of objects) {
     for (const key in object3.properties) {
       if (Object.prototype.hasOwnProperty.call(properties, key))
@@ -26757,11 +26757,11 @@ function foldObjects(members2) {
       assignProp(properties, key, merged);
     }
     for (const key of object3.required ?? [])
-      required2.add(key);
+      required3.add(key);
   }
   const folded = { type: "object", properties };
-  if (required2.size)
-    folded.required = [...required2];
+  if (required3.size)
+    folded.required = [...required3];
   if (objects.every((object3) => object3.additionalProperties === false)) {
     folded.additionalProperties = false;
   } else {
@@ -26795,7 +26795,7 @@ function foldIntersection(json2) {
     if (Object.keys(union2).length !== 1)
       return;
     const rest = allOf.filter((m) => m !== union2);
-    const branches = union2[keyword].map((branch) => foldObjects([...rest, branch]));
+    const branches = union2[keyword].map((branch2) => foldObjects([...rest, branch2]));
     if (branches.some((b) => !b))
       return;
     folded = { [keyword]: branches };
@@ -27513,8 +27513,8 @@ function stringifyKeyNames(bySchema, json2, visited) {
     const branches = json2[keyword];
     if (!Array.isArray(branches))
       continue;
-    const mapped = branches.map((branch) => stringifyKeyNames(bySchema, branch, visited));
-    if (mapped.some((branch, i) => branch !== branches[i]))
+    const mapped = branches.map((branch2) => stringifyKeyNames(bySchema, branch2, visited));
+    if (mapped.some((branch2, i) => branch2 !== branches[i]))
       json2 = { ...json2, [keyword]: mapped };
   }
   const types = Array.isArray(json2.type) ? json2.type : [json2.type];
@@ -28164,11 +28164,11 @@ function normalizeObjectSchema(schema) {
   }
   return void 0;
 }
-function getDotPath(path3) {
-  if (path3.length === 0) {
+function getDotPath(path4) {
+  if (path4.length === 0) {
     return "object root";
   }
-  return path3.reduce((acc, seg, index) => {
+  return path4.reduce((acc, seg, index) => {
     if (index === 0) {
       return String(seg);
     }
@@ -29936,14 +29936,14 @@ var ZodTransform = /* @__PURE__ */ $constructor("ZodTransform", (inst, def) => {
         payload.issues.push(util_exports.issue(_issue));
       }
     };
-    const output2 = def.transform(payload.value, payload);
-    if (output2 instanceof Promise) {
-      return output2.then((output3) => {
-        payload.value = output3;
+    const output3 = def.transform(payload.value, payload);
+    if (output3 instanceof Promise) {
+      return output3.then((output4) => {
+        payload.value = output4;
         return payload;
       });
     }
-    payload.value = output2;
+    payload.value = output3;
     return payload;
   };
 });
@@ -30395,13 +30395,13 @@ function resolveRef(ref2, ctx) {
   if (!ref2.startsWith("#")) {
     throw new Error("External $ref is not supported, only local refs (#/...) are allowed");
   }
-  const path3 = ref2.slice(1).split("/").filter(Boolean);
-  if (path3.length === 0) {
+  const path4 = ref2.slice(1).split("/").filter(Boolean);
+  if (path4.length === 0) {
     return ctx.rootSchema;
   }
   const defsKey = ctx.version === "draft-2020-12" ? "$defs" : "definitions";
-  if (path3[0] === defsKey) {
-    const key = path3[1] === void 0 ? void 0 : decodeJSONPointerSegment(path3[1]);
+  if (path4[0] === defsKey) {
+    const key = path4[1] === void 0 ? void 0 : decodeJSONPointerSegment(path4[1]);
     if (!key || !ctx.defs[key]) {
       throw new Error(`Reference not found: ${ref2}`);
     }
@@ -33549,7 +33549,7 @@ function parseObjectDef(def, refs) {
     type: "object",
     properties: {}
   };
-  const required2 = [];
+  const required3 = [];
   const shape = def.shape();
   for (const propName in shape) {
     let propDef = shape[propName];
@@ -33576,11 +33576,11 @@ function parseObjectDef(def, refs) {
     }
     result.properties[propName] = parsedDef;
     if (!propOptional) {
-      required2.push(propName);
+      required3.push(propName);
     }
   }
-  if (required2.length) {
-    result.required = required2;
+  if (required3.length) {
+    result.required = required3;
   }
   const additionalProperties = decideAdditionalProperties(def, refs);
   if (additionalProperties !== void 0) {
@@ -33856,7 +33856,7 @@ var addMeta = (def, refs, jsonSchema) => {
 // node_modules/zod-to-json-schema/dist/esm/zodToJsonSchema.js
 var zodToJsonSchema = (schema, options) => {
   const refs = getRefs(options);
-  let definitions = typeof options === "object" && options.definitions ? Object.entries(options.definitions).reduce((acc, [name2, schema2]) => ({
+  let definitions2 = typeof options === "object" && options.definitions ? Object.entries(options.definitions).reduce((acc, [name2, schema2]) => ({
     ...acc,
     [name2]: parseDef(schema2._def, {
       ...refs,
@@ -33873,11 +33873,11 @@ var zodToJsonSchema = (schema, options) => {
     main2.title = title;
   }
   if (refs.flags.hasReferencedOpenAiAnyType) {
-    if (!definitions) {
-      definitions = {};
+    if (!definitions2) {
+      definitions2 = {};
     }
-    if (!definitions[refs.openAiAnyTypeName]) {
-      definitions[refs.openAiAnyTypeName] = {
+    if (!definitions2[refs.openAiAnyTypeName]) {
+      definitions2[refs.openAiAnyTypeName] = {
         // Skipping "object" as no properties can be defined and additionalProperties must be "false"
         type: ["string", "number", "integer", "boolean", "array", "null"],
         items: {
@@ -33890,9 +33890,9 @@ var zodToJsonSchema = (schema, options) => {
       };
     }
   }
-  const combined = name === void 0 ? definitions ? {
+  const combined = name === void 0 ? definitions2 ? {
     ...main2,
-    [refs.definitionPath]: definitions
+    [refs.definitionPath]: definitions2
   } : main2 : {
     $ref: [
       ...refs.$refStrategy === "relative" ? [] : refs.basePath,
@@ -33900,7 +33900,7 @@ var zodToJsonSchema = (schema, options) => {
       name
     ].join("/"),
     [refs.definitionPath]: {
-      ...definitions,
+      ...definitions2,
       [name]: main2
     }
   };
@@ -35809,7 +35809,7 @@ var McpServer = class {
     });
     this.server.setRequestHandler(ListToolsRequestSchema, () => ({
       tools: Object.entries(this._registeredTools).filter(([, tool]) => tool.enabled).map(([name, tool]) => {
-        const toolDefinition = {
+        const toolDefinition2 = {
           name,
           title: tool.title,
           description: tool.description,
@@ -35827,13 +35827,13 @@ var McpServer = class {
         if (tool.outputSchema) {
           const obj = normalizeObjectSchema(tool.outputSchema);
           if (obj) {
-            toolDefinition.outputSchema = toJsonSchemaCompat(obj, {
+            toolDefinition2.outputSchema = toJsonSchemaCompat(obj, {
               strictUnions: true,
               pipeStrategy: "output"
             });
           }
         }
-        return toolDefinition;
+        return toolDefinition2;
       })
     }));
     this.server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
@@ -36658,29 +36658,434 @@ var StdioServerTransport = class {
 
 // src/git.js
 var import_node_child_process = require("node:child_process");
-var import_node_crypto = require("node:crypto");
-var import_promises = require("node:fs/promises");
+var import_node_crypto2 = require("node:crypto");
+var import_promises2 = require("node:fs/promises");
 var import_node_os = require("node:os");
-var import_node_path = __toESM(require("node:path"), 1);
+var import_node_path2 = __toESM(require("node:path"), 1);
+
+// src/errors.js
 var GitError = class extends Error {
   constructor(code, message) {
     super(message);
     this.code = code;
   }
 };
-var inside = (root, file2) => {
-  const relative = import_node_path.default.relative(root, file2);
+
+// src/tools.js
+var text = external_exports.string().min(1).max(1e4).refine((value) => !value.includes("\0"), "NUL is not accepted");
+var repo_path = text.describe("Absolute path inside the target Git working tree; for init/clone, the destination directory.");
+var paths = external_exports.array(text).max(100).optional().describe("Literal repository-relative file/directory paths; no globs. Omit to read all tracked changes.");
+var ref = text;
+var flag = external_exports.boolean().default(false);
+var limit = external_exports.number().int().min(1).max(100).default(20);
+var expected_head = ref.describe("Expected current HEAD hash; read git_status immediately before changing history.");
+var discard_changes = flag.describe("Explicit authorization to discard the selected local data.");
+var action = (values) => external_exports.enum(values);
+var flow = { action: action(["start", "continue", "abort", "skip"]).default("start") };
+var read = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false };
+var write = { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false };
+var tools = [
+  { name: "git_status", description: "Read branch, HEAD, literal changed paths and index fingerprint. Handles unborn and detached HEAD.", schema: { repo_path }, annotations: read },
+  { name: "git_diff", description: "Read working, staged or branch range diff. Untracked file contents are not included. Staged results include the fingerprint required by git_commit.", schema: { repo_path, paths, mode: external_exports.enum(["working", "staged", "range"]).default("working"), base: ref.optional(), head: ref.optional(), merge_base: external_exports.boolean().default(true), context: external_exports.number().int().min(0).max(20).default(3) }, annotations: read },
+  { name: "git_log", description: "Read bounded commit history. An unborn repository has no history and returns a Git error.", schema: { repo_path, paths, ref: ref.optional(), limit: external_exports.number().int().min(1).max(100).default(20) }, annotations: read },
+  { name: "git_show", description: "Read metadata, statistics and patch for one commit.", schema: { repo_path, paths, ref: ref.optional() }, annotations: read },
+  { name: "git_branches", description: "List local branches and optionally already-known remote tracking branches; does not contact remotes.", schema: { repo_path, include_remote: external_exports.boolean().default(false) }, annotations: read },
+  { name: "git_add", description: "Stage explicitly selected literal paths, including deletions. Changes the index, not working files. Configured Git clean filters may execute programs. Only use within the user-authorized task.", schema: { repo_path, paths: paths.unwrap().min(1) }, annotations: { ...write, idempotentHint: true, openWorldHint: true } },
+  { name: "git_unstage", description: "Unstage selected literal paths while preserving working files, including before the first commit.", schema: { repo_path, paths: paths.unwrap().min(1) }, annotations: { ...write, idempotentHint: true } },
+  { name: "git_commit", description: "Create a local unsigned commit of the reviewed index. Requires its current fingerprint from git_diff (staged). Hooks are disabled; run required project checks separately. Does not push or amend.", schema: { repo_path, message: external_exports.string().min(1).max(1e4), expected_index_fingerprint: external_exports.string().regex(/^[a-f0-9]{64}$/) }, annotations: write },
+  { name: "git_create_branch", description: "Create a new local branch at an existing commit without switching to it or overwriting another branch.", schema: { repo_path, name: ref, start_point: ref.optional() }, annotations: write },
+  { name: "git_switch_branch", description: "Switch to an existing local branch only with a clean index and working tree. Configured checkout filters may execute programs or access the network. Does not force, create or guess remote branches.", schema: { repo_path, name: ref }, annotations: { ...write, openWorldHint: true } },
+  { name: "git_init", description: "Initialize a repository in a new or empty destination directory. Does not reinitialize existing projects.", schema: { repo_path, initial_branch: ref.default("main") }, annotations: write },
+  { name: "git_clone", description: "Clone an explicit URL or local source into a new or empty destination. Does not recursively clone submodules.", schema: { repo_path, url: text, branch: ref.optional(), depth: external_exports.number().int().min(1).max(1e6).optional() }, annotations: { ...write, openWorldHint: true } },
+  { name: "git_remote", description: "List or explicitly add, remove, rename or set the URL of a named remote.", schema: { repo_path, action: action(["list", "add", "remove", "rename", "set_url"]).default("list"), name: ref.optional(), url: text.optional(), new_name: ref.optional() }, annotations: { ...write, openWorldHint: true } },
+  { name: "git_fetch", description: "Fetch from one configured remote, optionally one branch. Pruning and tags require explicit flags.", schema: { repo_path, remote: ref, branch: ref.optional(), prune: flag, tags: flag }, annotations: { ...write, openWorldHint: true } },
+  { name: "git_pull", description: "Fetch one remote branch and integrate it into a clean working tree. Defaults to fast-forward only; merge/rebase must be selected explicitly.", schema: { repo_path, remote: ref, branch: ref, strategy: action(["ff_only", "merge", "rebase"]).default("ff_only") }, annotations: { ...write, openWorldHint: true } },
+  { name: "git_push", description: "Push one explicit source to one remote branch or tag. No unrestricted force: replacement/deletion requires the expected remote object and force-with-lease.", schema: { repo_path, remote: ref, branch: ref.describe("Destination name within refs/heads or refs/tags."), target_type: action(["branch", "tag"]).default("branch"), source: ref.default("HEAD"), set_upstream: flag, delete: flag, expected_remote_oid: external_exports.string().regex(/^[a-f0-9]{40}([a-f0-9]{24})?$/).optional(), force_with_lease: flag, dry_run: flag }, annotations: { ...write, openWorldHint: true } },
+  { name: "git_ls_remote", description: "Read current remote branch/tag object IDs without updating tracking refs. Use exact object IDs for push leases.", schema: { repo_path, remote: ref, kind: action(["all", "heads", "tags"]).default("all") }, annotations: { ...read, openWorldHint: true } },
+  { name: "git_merge", description: "Start, continue or abort a merge. Starts on a clean tree; defaults to fast-forward only. Conflicts remain available for inspection.", schema: { repo_path, action: action(["start", "continue", "abort"]).default("start"), ref: ref.optional(), strategy: action(["ff_only", "merge", "no_ff", "squash"]).default("ff_only") }, annotations: write },
+  { name: "git_rebase", description: "Start a noninteractive rebase on a clean tree, or continue/abort/skip it. Starting rewrites local history and requires expected_head.", schema: { repo_path, ...flow, upstream: ref.optional(), onto: ref.optional(), expected_head: expected_head.optional() }, annotations: write },
+  { name: "git_cherry_pick", description: "Apply selected commits in order, or continue/abort/skip a stopped cherry-pick. Does not auto-stash.", schema: { repo_path, ...flow, commits: external_exports.array(ref).min(1).max(100).optional(), mainline: external_exports.number().int().min(1).max(100).optional() }, annotations: write },
+  { name: "git_revert", description: "Create inverse commits, or continue/abort/skip a stopped revert. Merge commits need an explicit mainline.", schema: { repo_path, ...flow, commits: external_exports.array(ref).min(1).max(100).optional(), mainline: external_exports.number().int().min(1).max(100).optional() }, annotations: write },
+  { name: "git_stash", description: "List/show, push, apply, pop, drop or clear stashes. Drop/pop require expected_stash; clear requires discard_changes.", schema: { repo_path, action: action(["list", "show", "push", "apply", "pop", "drop", "clear"]).default("list"), ref: external_exports.string().regex(/^stash@\{\d+\}$/).default("stash@{0}"), message: text.optional(), paths, include_untracked: flag, restore_index: flag, expected_stash: ref.optional(), discard_changes }, annotations: write },
+  { name: "git_tag", description: "List, create or delete local lightweight/annotated unsigned tags. Existing tags are never overwritten.", schema: { repo_path, action: action(["list", "create", "delete"]).default("list"), name: ref.optional(), ref: ref.default("HEAD"), message: text.optional() }, annotations: write },
+  { name: "git_blame", description: "Read line attribution for one literal tracked path at a commit; optionally restrict line numbers.", schema: { repo_path, path: text, ref: ref.default("HEAD"), start_line: external_exports.number().int().min(1).optional(), end_line: external_exports.number().int().min(1).optional() }, annotations: read },
+  { name: "git_worktree", description: "List, add, remove, move, lock, unlock or prune worktrees. Destinations obey GIT_MCP_ROOTS; removal never forces dirty trees.", schema: { repo_path, action: action(["list", "add", "remove", "move", "lock", "unlock", "prune"]).default("list"), path: text.optional(), destination: text.optional(), branch: ref.optional(), new_branch: ref.optional(), ref: ref.default("HEAD"), reason: text.optional(), dry_run: external_exports.boolean().default(true) }, annotations: write },
+  { name: "git_submodule", description: "Read status or add/init/update/sync/deinit explicitly selected submodules. No foreach, shell commands, custom update commands or force.", schema: { repo_path, action: action(["status", "add", "init", "update", "sync", "deinit"]).default("status"), paths, url: text.optional(), path: text.optional(), recursive: flag, allow_file: flag }, annotations: { ...write, openWorldHint: true } },
+  { name: "git_reset", description: "Reset to a reviewed commit using soft/mixed/hard mode. Requires expected_head; hard additionally requires discard_changes.", schema: { repo_path, ref: ref.default("HEAD"), mode: action(["soft", "mixed", "hard"]).default("mixed"), expected_head, discard_changes }, annotations: write },
+  { name: "git_clean", description: "Preview removal of explicitly selected untracked paths. Execution requires dry_run=false, discard_changes=true and the preview fingerprint.", schema: { repo_path, paths: paths.unwrap().min(1), directories: flag, include_ignored: flag, dry_run: external_exports.boolean().default(true), discard_changes, expected_preview: ref.optional() }, annotations: write },
+  { name: "git_amend", description: "Amend the local HEAD with a reviewed index. Requires expected_head and expected_index_fingerprint; unsigned and noninteractive.", schema: { repo_path, expected_head, expected_index_fingerprint: external_exports.string().regex(/^[a-f0-9]{64}$/), message: text.optional() }, annotations: write },
+  { name: "git_delete_branch", description: "Delete a local branch, normally only when merged. Force requires expected_head of the branch being deleted.", schema: { repo_path, name: ref, force: flag, expected_head: expected_head.optional() }, annotations: write },
+  { name: "git_rename_branch", description: "Rename a local branch without overwriting another branch.", schema: { repo_path, name: ref, new_name: ref }, annotations: write },
+  { name: "git_restore", description: "Restore explicit paths from a commit or index. Working-file replacement requires discard_changes. Can restore the index, working files or both.", schema: { repo_path, paths: paths.unwrap().min(1), source: ref.optional(), staged: flag, worktree: external_exports.boolean().default(true), discard_changes }, annotations: write },
+  { name: "git_rm", description: "Remove explicit tracked paths from working files/index, or only the index with cached=true. Never forces modified files.", schema: { repo_path, paths: paths.unwrap().min(1), cached: flag, recursive: flag }, annotations: write },
+  { name: "git_mv", description: "Move a tracked path and stage its rename, without overwriting an existing destination.", schema: { repo_path, source: text, destination: text }, annotations: { ...write, openWorldHint: true } },
+  { name: "git_checkout", description: "Checkout a local branch or detach at a commit. Force requires discard_changes and expected_head. For file restoration use git_restore.", schema: { repo_path, ref, detach: flag, force: flag, discard_changes, expected_head: expected_head.optional() }, annotations: { ...write, openWorldHint: true } },
+  { name: "git_reflog", description: "Read bounded reflog entries to locate previous local history.", schema: { repo_path, ref: ref.default("HEAD"), limit }, annotations: read },
+  { name: "git_ls_files", description: "List tracked files and optionally untracked nonignored paths as literal names.", schema: { repo_path, paths, untracked: flag }, annotations: read },
+  { name: "git_grep", description: "Search tracked files using a fixed string by default, optionally a regular expression or a committed revision.", schema: { repo_path, pattern: text, paths, ref: ref.optional(), regex: flag, ignore_case: flag }, annotations: read },
+  { name: "git_describe", description: "Describe a commit using the nearest reachable tag and an abbreviated hash.", schema: { repo_path, ref: ref.default("HEAD"), tags: external_exports.boolean().default(true) }, annotations: read },
+  { name: "git_merge_base", description: "Find common ancestors of two validated commits.", schema: { repo_path, base: ref, head: ref.default("HEAD") }, annotations: read },
+  { name: "git_config", description: "List/get/set/unset repository-local config only. No arbitrary scope, include files, aliases or command-executing config writes.", schema: { repo_path, action: action(["list", "get", "set", "unset"]).default("list"), key: text.optional(), value: text.optional() }, annotations: write },
+  { name: "git_apply", description: "Check or apply a supplied patch to working files or the index. Never accepts unsafe paths; check=true is read-only.", schema: { repo_path, patch: external_exports.string().min(1).max(4e5), check: external_exports.boolean().default(true), cached: flag, reverse: flag }, annotations: write },
+  { name: "git_bisect", description: "Start/manual good/bad/skip/reset/log for binary-search debugging. Does not execute a test command.", schema: { repo_path, action: action(["start", "good", "bad", "skip", "reset", "log"]), good: ref.optional(), bad: ref.optional(), ref: ref.optional() }, annotations: write },
+  { name: "git_notes", description: "List/show/add/remove notes in the default local notes ref. Existing notes are never overwritten.", schema: { repo_path, action: action(["list", "show", "add", "remove"]).default("list"), ref: ref.default("HEAD"), message: text.optional() }, annotations: write }
+];
+var definitions = new Map(tools.map((tool) => [tool.name, { ...tool, input: external_exports.object(tool.schema).strict() }]));
+var toolDefinition = (name) => definitions.get(name);
+function isReadOnly(name, args) {
+  if (definitions.get(name)?.annotations.readOnlyHint) return true;
+  if (name === "git_clean") return args.dry_run !== false;
+  if (name === "git_apply") return args.check !== false;
+  if (name === "git_worktree" && args.action === "prune") return args.dry_run !== false;
+  const actions = { git_remote: ["list"], git_stash: ["list", "show"], git_tag: ["list"], git_worktree: ["list"], git_submodule: ["status"], git_config: ["list", "get"], git_bisect: ["log"], git_notes: ["list", "show"] };
+  return actions[name]?.includes(args.action ?? (name === "git_submodule" ? "status" : "list")) ?? false;
+}
+
+// src/operations.js
+var import_node_crypto = require("node:crypto");
+var import_promises = require("node:fs/promises");
+var import_node_path = __toESM(require("node:path"), 1);
+var fail = (message) => {
+  throw new GitError("INVALID_INPUT", message);
+};
+var required2 = (args, key) => args[key] ?? fail(`${key} is required for this action.`);
+var inside = (root, target) => {
+  const relative = import_node_path.default.relative(root, target);
   return relative === "" || !relative.startsWith(`..${import_node_path.default.sep}`) && relative !== ".." && !import_node_path.default.isAbsolute(relative);
 };
-async function runGit(cwd, args, { hooksPath, timeoutMs = 15e3, maxBytes = 512e3, allowed = [0] } = {}) {
+var output2 = (response) => ({ output: response.stdout, stderr: response.stderr });
+async function canonicalTarget(target) {
+  if (!import_node_path.default.isAbsolute(target) || target.includes("\0")) fail("An absolute filesystem path is required.");
+  if (target.split(/[\\/]/).some((part) => part.toLowerCase() === ".git")) fail("Git metadata paths are not accepted.");
+  let ancestor = import_node_path.default.normalize(target);
+  const suffix = [];
+  for (; ; ) {
+    try {
+      const resolved = import_node_path.default.join(await (0, import_promises.realpath)(ancestor), ...suffix);
+      if (resolved.split(/[\\/]/).some((part) => part.toLowerCase() === ".git")) fail("Git metadata destinations are not accepted.");
+      return resolved;
+    } catch (error62) {
+      if (error62.code !== "ENOENT") throw error62;
+      try {
+        if ((await (0, import_promises.lstat)(ancestor)).isSymbolicLink()) fail("Dangling symlink destinations are not accepted.");
+      } catch (statError) {
+        if (statError.code !== "ENOENT") throw statError;
+      }
+      const parent = import_node_path.default.dirname(ancestor);
+      if (parent === ancestor) throw error62;
+      suffix.unshift(import_node_path.default.basename(ancestor));
+      ancestor = parent;
+    }
+  }
+}
+async function destination(service, target) {
+  const canonical = await canonicalTarget(target);
+  if (service.roots.length) {
+    const roots = await Promise.all(service.roots.map((root) => (0, import_promises.realpath)(root)));
+    if (!roots.some((root) => inside(root, canonical))) throw new GitError("OUTSIDE_ROOTS", "Destination is outside GIT_MCP_ROOTS.");
+  }
+  return canonical;
+}
+function url2(value) {
+  if (!value || value.startsWith("-") || /[\0\r\n]/.test(value)) fail("An explicit repository URL or absolute local path is required.");
+  if (import_node_path.default.isAbsolute(value)) return value;
+  if (/^(https?|ssh|git|file):\/\//i.test(value) || /^[\w.-]+@[^:\s]+:.+/.test(value)) return value;
+  fail("Supported transports: HTTPS, SSH, git, file, or an absolute local path.");
+}
+async function branch(git, name) {
+  if (!name || name.startsWith("-") || name.includes("@{") || name.includes("\0")) fail("A literal branch name is required.");
+  await git(["check-ref-format", "--branch", name]);
+  return name;
+}
+async function tag(git, name) {
+  if (!name || name.startsWith("-") || name.includes("\0")) fail("A literal tag name is required.");
+  await git(["check-ref-format", `refs/tags/${name}`]);
+  return name;
+}
+function remoteName(name) {
+  if (!name || !/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(name)) fail("A literal remote name is required.");
+  return name;
+}
+async function remote(git, name) {
+  remoteName(name);
+  if (!(await git(["remote"])).stdout.split("\n").includes(name)) fail(`Unknown configured remote: ${name}`);
+  return name;
+}
+async function clean(git) {
+  if ((await git(["status", "--porcelain=v1", "-z", "--untracked-files=all"])).stdout) {
+    throw new GitError("DIRTY_WORKTREE", "This action requires a clean index and working tree. Preserve changes first.");
+  }
+}
+async function expectedHead(service, git, expected, ref2 = "HEAD") {
+  if (!expected) fail("expected_head is required for this action.");
+  if (await service.revision(git, ref2) !== expected) throw new GitError("HEAD_CHANGED", "The commit differs from the reviewed HEAD. Inspect the repository again.");
+}
+function discard(args) {
+  if (!args.discard_changes) fail("This action requires discard_changes=true.");
+}
+async function stopped(git, command) {
+  const response = await git(command, { allowed: [0, 1] });
+  const conflicts = (await git(["diff", "--name-only", "--diff-filter=U", "-z"])).stdout.split("\0").filter(Boolean);
+  return { ...output2(response), state: response.code === 0 ? "completed" : "stopped", conflicts };
+}
+async function setupRepository(service, name, args) {
+  const target = await destination(service, args.repo_path);
+  try {
+    if ((await (0, import_promises.readdir)(target)).length) fail("The destination must be new or empty.");
+  } catch (error62) {
+    if (error62.code !== "ENOENT") throw error62;
+  }
+  const git = (command2, options) => service.gitAt(import_node_path.default.dirname(target), command2, options);
+  if (name === "git_clone") url2(args.url);
+  const ref2 = name === "git_init" ? args.initial_branch : args.branch;
+  if (ref2) {
+    if (ref2.startsWith("-") || ref2.includes("@{")) fail("A literal initial branch is required.");
+    await service.gitAt(await (0, import_promises.realpath)(process.cwd()), ["check-ref-format", "--branch", ref2]);
+  }
+  await (0, import_promises.mkdir)(import_node_path.default.dirname(target), { recursive: true });
+  const command = name === "git_init" ? ["init", `--initial-branch=${args.initial_branch}`, "--", target] : ["clone", "--no-local", ...args.branch ? ["--branch", args.branch] : [], ...args.depth ? ["--depth", String(args.depth)] : [], "--", args.url, target];
+  return { repository: target, ...output2(await git(command, { timeoutMs: 12e4 })) };
+}
+async function executeExtended(service, name, args, { root, git, paths: paths2, result }) {
+  const revision = (ref2) => service.revision(git, ref2);
+  const selected = () => {
+    if (!paths2.length) fail("At least one explicit path is required.");
+    return paths2;
+  };
+  const run = async (command, options) => ({ ...result, ...output2(await git(command, options)) });
+  switch (name) {
+    case "git_remote": {
+      if (args.action === "list") return run(["remote", "-v"]);
+      const name2 = remoteName(required2(args, "name"));
+      if (args.action === "add") return run(["remote", "add", "--", name2, url2(required2(args, "url"))]);
+      await remote(git, name2);
+      if (args.action === "remove") return run(["remote", "remove", name2]);
+      if (args.action === "rename") return run(["remote", "rename", name2, remoteName(required2(args, "new_name"))]);
+      return run(["remote", "set-url", "--", name2, url2(required2(args, "url"))]);
+    }
+    case "git_fetch": {
+      await remote(git, args.remote);
+      if (args.branch) await branch(git, args.branch);
+      return run(["fetch", "--no-recurse-submodules", args.tags ? "--tags" : "--no-tags", args.prune ? "--prune" : "--no-prune", "--no-prune-tags", "--", args.remote, ...args.branch ? [args.branch] : []], { timeoutMs: 12e4 });
+    }
+    case "git_pull": {
+      await clean(git);
+      await remote(git, args.remote);
+      await branch(git, args.branch);
+      const fetched = await git(["fetch", "--no-recurse-submodules", "--no-tags", "--", args.remote, args.branch], { timeoutMs: 12e4 });
+      const head = await revision("FETCH_HEAD");
+      const command = args.strategy === "rebase" ? ["rebase", "--no-autostash", head] : ["merge", "--no-edit", "--no-gpg-sign", args.strategy === "merge" ? "--ff" : "--ff-only", head];
+      return { ...result, fetch: output2(fetched), ...await stopped(git, command) };
+    }
+    case "git_push": {
+      await remote(git, args.remote);
+      const target = args.target_type === "tag" ? `refs/tags/${await tag(git, args.branch)}` : `refs/heads/${await branch(git, args.branch)}`;
+      if ((args.force_with_lease || args.delete) && !args.expected_remote_oid) fail("expected_remote_oid is required for replacement or deletion.");
+      if (args.expected_remote_oid && !args.force_with_lease && !args.delete) fail("Select force_with_lease explicitly when supplying expected_remote_oid.");
+      if (args.delete && args.set_upstream) fail("Deletion cannot set an upstream.");
+      if (args.target_type === "tag" && args.set_upstream) fail("Tags cannot set an upstream.");
+      let source = args.delete ? "" : await revision(args.source);
+      if (!args.delete && args.target_type === "tag") source = (await git(["rev-parse", "--verify", "--end-of-options", args.source])).stdout.trim();
+      let local = source;
+      if (args.set_upstream) {
+        const current = (await git(["symbolic-ref", "--quiet", "--short", "HEAD"])).stdout.trim();
+        if (await revision(current) !== source) fail("set_upstream requires the current local branch as source.");
+        local = current;
+      }
+      const lease = args.expected_remote_oid ? [`--force-with-lease=${target}:${args.expected_remote_oid}`] : [];
+      return run(["-c", "push.followTags=false", "push", "--porcelain", "--recurse-submodules=no", ...args.dry_run ? ["--dry-run"] : [], ...args.set_upstream ? ["--set-upstream"] : [], ...lease, "--", args.remote, `${local}:${target}`], { timeoutMs: 12e4 });
+    }
+    case "git_ls_remote": {
+      await remote(git, args.remote);
+      const response = await git(["ls-remote", "--refs", ...args.kind === "all" ? [] : [`--${args.kind}`], "--", args.remote], { timeoutMs: 12e4 });
+      return { ...result, refs: response.stdout.trimEnd().split("\n").filter(Boolean).map((line) => {
+        const [oid, ref2] = line.split("	");
+        return { oid, ref: ref2 };
+      }) };
+    }
+    case "git_merge": {
+      if (args.action !== "start") return { ...result, ...await stopped(git, ["merge", `--${args.action}`]) };
+      const ref2 = await revision(required2(args, "ref"));
+      await clean(git);
+      const flags = { ff_only: ["--ff-only"], merge: ["--ff"], no_ff: ["--no-ff"], squash: ["--squash"] };
+      return { ...result, ...await stopped(git, ["merge", "--no-edit", "--no-gpg-sign", ...flags[args.strategy], ref2]) };
+    }
+    case "git_rebase": {
+      if (args.action !== "start") return { ...result, ...await stopped(git, ["rebase", `--${args.action}`]) };
+      await expectedHead(service, git, args.expected_head);
+      await clean(git);
+      const upstream = await revision(required2(args, "upstream"));
+      const onto = args.onto ? ["--onto", await revision(args.onto)] : [];
+      return { ...result, ...await stopped(git, ["rebase", "--no-autostash", ...onto, upstream]) };
+    }
+    case "git_cherry_pick":
+    case "git_revert": {
+      const command = name === "git_revert" ? "revert" : "cherry-pick";
+      if (args.action !== "start") return { ...result, ...await stopped(git, [command, `--${args.action}`]) };
+      await clean(git);
+      const commits = [];
+      for (const commit of required2(args, "commits")) commits.push(await revision(commit));
+      return { ...result, ...await stopped(git, [command, "--no-edit", "--no-gpg-sign", ...args.mainline ? ["--mainline", String(args.mainline)] : [], ...commits]) };
+    }
+    case "git_stash": {
+      if (args.action === "list") return run(["stash", "list", "--max-count=100"]);
+      if (args.action === "push") return run(["stash", "push", ...args.include_untracked ? ["--include-untracked"] : [], ...args.message ? ["--message", args.message] : [], ...paths2.length ? ["--", ...paths2.map((file2) => `:(literal)${file2}`)] : []], { literalPaths: false });
+      if (args.action === "clear") {
+        discard(args);
+        return run(["stash", "clear"]);
+      }
+      const hash2 = await revision(args.ref);
+      if (args.action === "show") return { ...await run(["stash", "show", "--patch", "--no-ext-diff", "--no-textconv", args.ref]), stash: hash2 };
+      if (["pop", "drop"].includes(args.action) && args.expected_stash !== hash2) throw new GitError("STASH_CHANGED", "Read the selected stash and supply its hash as expected_stash before pop/drop.");
+      return { ...result, stash: hash2, ...await stopped(git, ["stash", args.action, ...["apply", "pop"].includes(args.action) && args.restore_index ? ["--index"] : [], args.ref]) };
+    }
+    case "git_tag": {
+      if (args.action === "list") return run(["tag", "--list", "--format=%(refname:short)%09%(objectname)%09%(subject)"]);
+      const name2 = await tag(git, required2(args, "name"));
+      if (args.action === "delete") return run(["tag", "--delete", "--", name2]);
+      return run(["tag", "--no-sign", ...args.message ? ["--annotate", "--message", args.message] : [], "--", name2, await revision(args.ref)]);
+    }
+    case "git_blame": {
+      const file2 = service.paths(root, [args.path])[0];
+      if (args.end_line && !args.start_line) fail("start_line is required with end_line.");
+      if (args.end_line && args.end_line < args.start_line) fail("end_line must not precede start_line.");
+      return run(["blame", "--line-porcelain", ...args.start_line ? ["-L", `${args.start_line},${args.end_line ?? "$"}`] : [], await revision(args.ref), "--", file2]);
+    }
+    case "git_worktree": {
+      if (args.action === "list") return run(["worktree", "list", "--porcelain"]);
+      if (args.action === "prune") return run(["worktree", "prune", "--verbose", ...args.dry_run ? ["--dry-run"] : []]);
+      const target = await destination(service, required2(args, "path"));
+      if (args.action === "add") {
+        if (args.branch && args.new_branch) fail("Choose branch or new_branch, not both.");
+        const ref2 = args.branch ? await branch(git, args.branch) : await revision(args.ref);
+        if (args.new_branch) await branch(git, args.new_branch);
+        return run(["worktree", "add", ...args.new_branch ? ["-b", args.new_branch] : args.branch ? [] : ["--detach"], "--", target, ref2]);
+      }
+      await service.repository(target);
+      if (args.action === "move") return run(["worktree", "move", "--", target, await destination(service, required2(args, "destination"))]);
+      return run(["worktree", args.action, ...args.action === "lock" && args.reason ? ["--reason", args.reason] : [], "--", target]);
+    }
+    case "git_submodule": {
+      const command = ["-c", "submodule.recurse=false", ...args.allow_file ? ["-c", "protocol.file.allow=always"] : [], "submodule", args.action];
+      if (args.action === "add") {
+        const target = service.paths(root, [required2(args, "path")])[0];
+        const resolved = await canonicalTarget(import_node_path.default.join(root, target));
+        if (!inside(root, resolved)) fail("Submodule destination escapes the repository.");
+        command.push("--", url2(required2(args, "url")), target);
+      } else {
+        if (args.action !== "status") selected();
+        for (const file2 of paths2) {
+          if (!inside(root, await canonicalTarget(import_node_path.default.join(root, file2)))) fail("Submodule path escapes the repository.");
+        }
+        if (args.action === "update") command.push("--init", "--checkout");
+        if (args.recursive && ["status", "update", "sync"].includes(args.action)) command.push("--recursive");
+        command.push("--", ...paths2);
+      }
+      return run(command, { timeoutMs: 12e4 });
+    }
+    case "git_reset": {
+      await expectedHead(service, git, args.expected_head);
+      if (args.mode === "hard") discard(args);
+      return run(["reset", `--${args.mode}`, await revision(args.ref), "--"]);
+    }
+    case "git_clean": {
+      const flags = [...args.directories ? ["-d"] : [], ...args.include_ignored ? ["-x"] : []];
+      const preview = (await git(["clean", "--dry-run", ...flags, "--", ...selected()])).stdout;
+      const fingerprint = (0, import_node_crypto.createHash)("sha256").update(JSON.stringify([root, paths2, flags, preview])).digest("hex");
+      if (args.dry_run) return { ...result, preview, preview_fingerprint: fingerprint };
+      discard(args);
+      if (args.expected_preview !== fingerprint) throw new GitError("PREVIEW_CHANGED", "Run git_clean in dry-run mode and review its current preview first.");
+      return run(["clean", "--force", ...flags, "--", ...paths2]);
+    }
+    case "git_amend": {
+      await expectedHead(service, git, args.expected_head);
+      if (await service.fingerprint(git) !== args.expected_index_fingerprint) throw new GitError("INDEX_CHANGED", "Read and review the complete staged diff before amending.");
+      const response = await git(["commit", "--amend", "--no-gpg-sign", ...args.message ? ["--cleanup=verbatim", "--message", args.message] : ["--no-edit"]]);
+      return { ...result, commit: await revision("HEAD"), ...output2(response) };
+    }
+    case "git_delete_branch": {
+      const name2 = await branch(git, args.name);
+      if (args.force) await expectedHead(service, git, args.expected_head, `refs/heads/${name2}`);
+      return run(["branch", args.force ? "-D" : "-d", "--", name2]);
+    }
+    case "git_rename_branch":
+      return run(["branch", "-m", "--", await branch(git, args.name), await branch(git, args.new_name)]);
+    case "git_restore": {
+      if (!args.staged && !args.worktree) fail("Select staged, worktree or both.");
+      if (args.worktree) discard(args);
+      return run(["restore", ...args.source ? ["--source", await revision(args.source)] : [], ...args.staged ? ["--staged"] : [], ...args.worktree ? ["--worktree"] : [], "--", ...selected()]);
+    }
+    case "git_rm":
+      return run(["rm", ...args.cached ? ["--cached"] : [], ...args.recursive ? ["-r"] : [], "--", ...selected()]);
+    case "git_mv": {
+      const [source, target] = service.paths(root, [args.source, args.destination]);
+      for (const file2 of [source, target]) if (!inside(root, await canonicalTarget(import_node_path.default.join(root, file2)))) fail("Move path escapes the repository.");
+      return run(["mv", "--", source, target]);
+    }
+    case "git_checkout": {
+      const ref2 = args.detach ? await revision(args.ref) : await branch(git, args.ref);
+      if (args.force) {
+        discard(args);
+        await expectedHead(service, git, args.expected_head);
+      } else await clean(git);
+      return run(["switch", ...args.detach ? ["--detach"] : ["--no-guess"], ...args.force ? ["--discard-changes"] : [], ref2]);
+    }
+    case "git_reflog": {
+      if (args.ref.startsWith("-")) fail("Invalid reflog ref.");
+      await revision(args.ref);
+      return run(["reflog", "show", `--max-count=${args.limit}`, "--format=%H %gd %gs", args.ref, "--"]);
+    }
+    case "git_ls_files": {
+      const response = await git(["ls-files", "--cached", ...args.untracked ? ["--others", "--exclude-standard"] : [], "-z", "--", ...paths2]);
+      return { ...result, files: response.stdout.split("\0").filter(Boolean) };
+    }
+    case "git_grep":
+      return run(["grep", "-n", ...args.regex ? ["-E"] : ["-F"], ...args.ignore_case ? ["-i"] : [], "-e", args.pattern, ...args.ref ? [await revision(args.ref)] : [], "--", ...paths2], { allowed: [0, 1] });
+    case "git_describe":
+      return run(["describe", "--always", ...args.tags ? ["--tags"] : [], await revision(args.ref)]);
+    case "git_merge_base":
+      return run(["merge-base", "--all", await revision(args.base), await revision(args.head)], { allowed: [0, 1] });
+    case "git_config": {
+      if (args.action === "list") return run(["config", "--local", "--no-includes", "--list"]);
+      const key = required2(args, "key");
+      if (!/^[a-zA-Z][a-zA-Z0-9-]*(\.[a-zA-Z0-9_-]+)+$/.test(key)) fail("A literal config key is required.");
+      if (args.action === "get") return run(["config", "--local", "--no-includes", "--get-all", "--", key], { allowed: [0, 1] });
+      if (!/^(user\.(name|email)|core\.(autocrlf|eol|ignorecase|filemode|logallrefupdates)|pull\.(ff|rebase)|push\.default|fetch\.prune|merge\.ff)$/i.test(key)) fail("This config key cannot be written by this tool. Use dedicated remote/branch tools or the host workflow.");
+      return run(["config", "--local", "--no-includes", args.action === "set" ? "--replace-all" : "--unset-all", "--", key, ...args.action === "set" ? [required2(args, "value")] : []]);
+    }
+    case "git_apply":
+      return run(["apply", ...args.check ? ["--check"] : [], ...args.cached ? ["--cached"] : [], ...args.reverse ? ["--reverse"] : [], "-"], { input: args.patch });
+    case "git_bisect": {
+      if (args.action === "log") return run(["bisect", "log"]);
+      await clean(git);
+      if (args.action === "start") return run(["bisect", "start", await revision(required2(args, "bad")), await revision(required2(args, "good")), "--"]);
+      return run(["bisect", args.action, ...args.ref ? [await revision(args.ref)] : []]);
+    }
+    case "git_notes": {
+      if (args.action === "list") return run(["notes", "list"]);
+      return run(["notes", args.action, ...args.action === "add" ? ["--message", required2(args, "message")] : [], await revision(args.ref)]);
+    }
+    default:
+      throw new GitError("UNKNOWN_TOOL", `Unknown tool: ${name}`);
+  }
+}
+
+// src/git.js
+var inside2 = (root, file2) => {
+  const relative = import_node_path2.default.relative(root, file2);
+  return relative === "" || !relative.startsWith(`..${import_node_path2.default.sep}`) && relative !== ".." && !import_node_path2.default.isAbsolute(relative);
+};
+async function runGit(cwd, args, { hooksPath, timeoutMs = 15e3, maxBytes = 512e3, allowed = [0], input: input2, literalPaths = true } = {}) {
   const env = { ...process.env };
   for (const name of Object.keys(env)) if (name.startsWith("GIT_")) delete env[name];
-  Object.assign(env, { GIT_TERMINAL_PROMPT: "0", GIT_OPTIONAL_LOCKS: "0", LC_ALL: "C" });
-  const flags = ["--no-pager", "--literal-pathspecs", "-c", "core.fsmonitor=false", "-c", "color.ui=false"];
+  Object.assign(env, { GIT_TERMINAL_PROMPT: "0", GIT_OPTIONAL_LOCKS: "0", GIT_EDITOR: "true", GIT_SEQUENCE_EDITOR: "true", GIT_MERGE_AUTOEDIT: "no", LC_ALL: "C" });
+  const flags = ["--no-pager", ...literalPaths ? ["--literal-pathspecs"] : [], "-c", "core.fsmonitor=false", "-c", "color.ui=false", "-c", "submodule.recurse=false", "-c", "protocol.ext.allow=never", "-c", "commit.gpgSign=false", "-c", "tag.gpgSign=false", "-c", "core.askPass=", "-c", "credential.interactive=false"];
   if (hooksPath) flags.push("-c", `core.hooksPath=${hooksPath}`);
   return new Promise((resolve, reject) => {
     const child = (0, import_node_child_process.spawn)("git", [...flags, ...args], { cwd, env, shell: false, windowsHide: true });
-    child.stdin.end();
+    child.stdin.on("error", () => {
+    });
+    child.stdin.end(input2);
     const stdout = [], stderr = [];
     let bytes = 0, failure2;
     const timer = setTimeout(() => {
@@ -36709,8 +37114,8 @@ async function runGit(cwd, args, { hooksPath, timeoutMs = 15e3, maxBytes = 512e3
     });
   });
 }
-function parseStatus(output2) {
-  const records = output2.split("\0");
+function parseStatus(output3) {
+  const records = output3.split("\0");
   const files = [];
   for (let i = 0; i < records.length; i++) {
     if (!records[i]) continue;
@@ -36726,37 +37131,40 @@ var GitService = class {
     this.roots = roots;
     this.readOnly = readOnly;
     this.queue = Promise.resolve();
-    this.hooksPath = (0, import_promises.mkdtemp)(import_node_path.default.join((0, import_node_os.tmpdir)(), "git-mcp-hooks-"));
+    this.hooksPath = (0, import_promises2.mkdtemp)(import_node_path2.default.join((0, import_node_os.tmpdir)(), "git-companion-hooks-"));
   }
   async close() {
-    await (0, import_promises.rm)(await this.hooksPath, { recursive: true, force: true });
+    await (0, import_promises2.rm)(await this.hooksPath, { recursive: true, force: true });
+  }
+  async gitAt(directory, args, options = {}) {
+    return runGit(directory, args, { hooksPath: await this.hooksPath, ...options });
   }
   async repository(directory) {
-    if (!import_node_path.default.isAbsolute(directory)) throw new GitError("INVALID_INPUT", "repo_path must be an absolute path.");
+    if (!import_node_path2.default.isAbsolute(directory)) throw new GitError("INVALID_INPUT", "repo_path must be an absolute path.");
     let canonical;
     try {
-      canonical = await (0, import_promises.realpath)(directory);
+      canonical = await (0, import_promises2.realpath)(directory);
     } catch {
       throw new GitError("NOT_REPOSITORY", "repo_path does not exist or is inaccessible.");
     }
     if (this.roots.length) {
-      const roots = await Promise.all(this.roots.map((root2) => (0, import_promises.realpath)(root2)));
-      if (!roots.some((root2) => inside(root2, canonical))) throw new GitError("OUTSIDE_ROOTS", "Repository is outside GIT_MCP_ROOTS.");
+      const roots = await Promise.all(this.roots.map((root2) => (0, import_promises2.realpath)(root2)));
+      if (!roots.some((root2) => inside2(root2, canonical))) throw new GitError("OUTSIDE_ROOTS", "Repository is outside GIT_MCP_ROOTS.");
     }
     const git = async (args, options) => runGit(canonical, args, { hooksPath: await this.hooksPath, ...options });
     const check2 = await git(["rev-parse", "--is-inside-work-tree"], { allowed: [0, 128] });
     if (check2.code !== 0 || check2.stdout.trim() !== "true") throw new GitError("NOT_REPOSITORY", "repo_path must be inside a non-bare Git working tree.");
     const root = (await git(["rev-parse", "--show-toplevel"])).stdout.replace(/\r?\n$/, "");
-    const canonicalRoot = await (0, import_promises.realpath)(root);
+    const canonicalRoot = await (0, import_promises2.realpath)(root);
     if (this.roots.length) {
-      const roots = await Promise.all(this.roots.map((rootPath) => (0, import_promises.realpath)(rootPath)));
-      if (!roots.some((allowed) => inside(allowed, canonicalRoot))) throw new GitError("OUTSIDE_ROOTS", "Repository root is outside GIT_MCP_ROOTS.");
+      const roots = await Promise.all(this.roots.map((rootPath) => (0, import_promises2.realpath)(rootPath)));
+      if (!roots.some((allowed) => inside2(allowed, canonicalRoot))) throw new GitError("OUTSIDE_ROOTS", "Repository root is outside GIT_MCP_ROOTS.");
     }
     return { root: canonicalRoot, git: async (args, options) => runGit(canonicalRoot, args, { hooksPath: await this.hooksPath, ...options }) };
   }
   paths(root, paths2 = []) {
     return paths2.map((file2) => {
-      if (!file2 || file2.includes("\0") || import_node_path.default.isAbsolute(file2) || !inside(root, import_node_path.default.resolve(root, file2)) || import_node_path.default.resolve(root, file2) === root) {
+      if (!file2 || file2.includes("\0") || import_node_path2.default.isAbsolute(file2) || !inside2(root, import_node_path2.default.resolve(root, file2)) || import_node_path2.default.resolve(root, file2) === root) {
         throw new GitError("INVALID_INPUT", "Each path must name a file or directory inside the repository; root-wide pathspecs are not accepted.");
       }
       if (file2.split(/[\\/]/).some((part) => part.toLowerCase() === ".git")) throw new GitError("INVALID_INPUT", "Git metadata paths are not accepted.");
@@ -36768,7 +37176,7 @@ var GitService = class {
     return (await git(["rev-parse", "--verify", "--end-of-options", `${ref2}^{commit}`])).stdout.trim();
   }
   async fingerprint(git) {
-    return (0, import_node_crypto.createHash)("sha256").update((await git(["ls-files", "--stage", "-z"])).stdout).digest("hex");
+    return (0, import_node_crypto2.createHash)("sha256").update((await git(["ls-files", "--stage", "-z"])).stdout).digest("hex");
   }
   execute(name, args) {
     const pending = this.queue.then(() => this.perform(name, args));
@@ -36777,17 +37185,22 @@ var GitService = class {
     return pending;
   }
   async perform(name, args) {
-    const writes = ["git_add", "git_unstage", "git_commit", "git_create_branch", "git_switch_branch"];
-    if (this.readOnly && writes.includes(name)) throw new GitError("READ_ONLY", "Mutations are disabled by GIT_MCP_READ_ONLY.");
+    const definition = toolDefinition(name);
+    if (!definition) throw new GitError("UNKNOWN_TOOL", `Unknown tool: ${name}`);
+    if (this.readOnly && !isReadOnly(name, args)) throw new GitError("READ_ONLY", "Mutations are disabled by GIT_MCP_READ_ONLY.");
+    const parsed = definition.input.safeParse(args);
+    if (!parsed.success) throw new GitError("INVALID_INPUT", parsed.error.issues.map((issue2) => `${issue2.path.join(".")}: ${issue2.message}`).join("; "));
+    args = parsed.data;
+    if (name === "git_init" || name === "git_clone") return setupRepository(this, name, args);
     const { root, git } = await this.repository(args.repo_path);
     const paths2 = this.paths(root, args.paths);
     const result = { repository: root };
     switch (name) {
       case "git_status": {
         const files = parseStatus((await git(["status", "--porcelain=v1", "-z", "--untracked-files=all"])).stdout);
-        const branch = await git(["symbolic-ref", "--quiet", "--short", "HEAD"], { allowed: [0, 1] });
+        const branch2 = await git(["symbolic-ref", "--quiet", "--short", "HEAD"], { allowed: [0, 1] });
         const head = await git(["rev-parse", "--verify", "--quiet", "HEAD"], { allowed: [0, 1] });
-        return { ...result, branch: branch.stdout.trim() || null, head: head.stdout.trim() || null, clean: files.length === 0, files, index_fingerprint: await this.fingerprint(git) };
+        return { ...result, branch: branch2.stdout.trim() || null, head: head.stdout.trim() || null, clean: files.length === 0, files, index_fingerprint: await this.fingerprint(git) };
       }
       case "git_diff": {
         const diffArgs = ["diff", "--no-ext-diff", "--no-textconv", "--no-color", `--unified=${args.context ?? 3}`];
@@ -36799,13 +37212,13 @@ var GitService = class {
           diffArgs.push(args.merge_base === false ? base : `${base}...${head}`);
           if (args.merge_base === false) diffArgs.push(head);
         }
-        const output2 = (await git([...diffArgs, "--", ...paths2])).stdout;
-        return { ...result, mode, diff: output2, ...mode === "staged" ? { index_fingerprint: await this.fingerprint(git) } : {} };
+        const output3 = (await git([...diffArgs, "--", ...paths2])).stdout;
+        return { ...result, mode, diff: output3, ...mode === "staged" ? { index_fingerprint: await this.fingerprint(git) } : {} };
       }
       case "git_log": {
         const ref2 = await this.revision(git, args.ref ?? "HEAD");
-        const output2 = (await git(["log", "-z", `--max-count=${args.limit ?? 20}`, "--format=%H%x00%an%x00%aI%x00%s%x00%b", ref2, "--", ...paths2])).stdout;
-        const fields = output2.split("\0");
+        const output3 = (await git(["log", "-z", `--max-count=${args.limit ?? 20}`, "--format=%H%x00%an%x00%aI%x00%s%x00%b", ref2, "--", ...paths2])).stdout;
+        const fields = output3.split("\0");
         const commits = [];
         for (let i = 0; i + 4 < fields.length; i += 5) commits.push({ hash: fields[i], author: fields[i + 1], date: fields[i + 2], subject: fields[i + 3], body: fields[i + 4].trimEnd() });
         return { ...result, commits };
@@ -36815,8 +37228,8 @@ var GitService = class {
         return { ...result, commit: ref2, output: (await git(["show", "--format=fuller", "--stat", "--patch", "--no-ext-diff", "--no-textconv", "--no-color", ref2, "--", ...paths2])).stdout };
       }
       case "git_branches": {
-        const output2 = (await git(["for-each-ref", "--format=%(refname:short)%00%(objectname)%00%(HEAD)%00%(upstream:short)", "refs/heads", ...args.include_remote ? ["refs/remotes"] : []])).stdout;
-        return { ...result, branches: output2.trimEnd().split("\n").filter(Boolean).map((line) => {
+        const output3 = (await git(["for-each-ref", "--format=%(refname:short)%00%(objectname)%00%(HEAD)%00%(upstream:short)", "refs/heads", ...args.include_remote ? ["refs/remotes"] : []])).stdout;
+        return { ...result, branches: output3.trimEnd().split("\n").filter(Boolean).map((line) => {
           const [name2, commit, current, upstream] = line.split("\0");
           return { name: name2, commit, current: current === "*", upstream: upstream || null };
         }) };
@@ -36836,8 +37249,8 @@ var GitService = class {
         const staged = await git(["diff", "--cached", "--quiet", "--no-ext-diff", "--no-textconv", "--exit-code"], { allowed: [0, 1] });
         if (staged.code === 0) throw new GitError("EMPTY_COMMIT", "There are no staged changes to commit.");
         if (!args.message?.trim() || args.message.includes("\0")) throw new GitError("INVALID_INPUT", "A non-empty commit message without NUL is required.");
-        const output2 = (await git(["-c", "commit.gpgSign=false", "commit", "--cleanup=verbatim", "-m", args.message])).stdout;
-        return { ...result, commit: await this.revision(git, "HEAD"), output: output2 };
+        const output3 = (await git(["-c", "commit.gpgSign=false", "commit", "--cleanup=verbatim", "-m", args.message])).stdout;
+        return { ...result, commit: await this.revision(git, "HEAD"), output: output3 };
       }
       case "git_create_branch":
       case "git_switch_branch": {
@@ -36854,39 +37267,20 @@ var GitService = class {
         return { ...result, branch: args.name };
       }
       default:
-        throw new GitError("UNKNOWN_TOOL", `Unknown tool: ${name}`);
+        return executeExtended(this, name, args, { root, git, paths: paths2, result });
     }
   }
 };
 
-// src/tools.js
-var repo_path = external_exports.string().min(1).describe("Absolute path inside the target Git working tree. All file paths are relative to its root.");
-var paths = external_exports.array(external_exports.string().min(1).max(4096)).max(100).optional().describe("Literal repository-relative file/directory paths; no globs. Omit to read all tracked changes.");
-var ref = external_exports.string().min(1).max(1024);
-var read = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false };
-var write = { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false };
-var tools = [
-  { name: "git_status", description: "Read branch, HEAD, literal changed paths and index fingerprint. Handles unborn and detached HEAD.", schema: { repo_path }, annotations: read },
-  { name: "git_diff", description: "Read working, staged or branch range diff. Untracked file contents are not included. Staged results include the fingerprint required by git_commit.", schema: { repo_path, paths, mode: external_exports.enum(["working", "staged", "range"]).default("working"), base: ref.optional(), head: ref.optional(), merge_base: external_exports.boolean().default(true), context: external_exports.number().int().min(0).max(20).default(3) }, annotations: read },
-  { name: "git_log", description: "Read bounded commit history. An unborn repository has no history and returns a Git error.", schema: { repo_path, paths, ref: ref.optional(), limit: external_exports.number().int().min(1).max(100).default(20) }, annotations: read },
-  { name: "git_show", description: "Read metadata, statistics and patch for one commit.", schema: { repo_path, paths, ref: ref.optional() }, annotations: read },
-  { name: "git_branches", description: "List local branches and optionally already-known remote tracking branches; does not contact remotes.", schema: { repo_path, include_remote: external_exports.boolean().default(false) }, annotations: read },
-  { name: "git_add", description: "Stage explicitly selected literal paths, including deletions. Changes the index, not working files. Configured Git clean filters may execute programs. Only use within the user-authorized task.", schema: { repo_path, paths: paths.unwrap().min(1) }, annotations: { ...write, idempotentHint: true, openWorldHint: true } },
-  { name: "git_unstage", description: "Unstage selected literal paths while preserving working files, including before the first commit.", schema: { repo_path, paths: paths.unwrap().min(1) }, annotations: { ...write, idempotentHint: true } },
-  { name: "git_commit", description: "Create a local unsigned commit of the reviewed index. Requires its current fingerprint from git_diff (staged). Hooks are disabled; run required project checks separately. Does not push or amend.", schema: { repo_path, message: external_exports.string().min(1).max(1e4), expected_index_fingerprint: external_exports.string().regex(/^[a-f0-9]{64}$/) }, annotations: write },
-  { name: "git_create_branch", description: "Create a new local branch at an existing commit without switching to it or overwriting another branch.", schema: { repo_path, name: ref, start_point: ref.optional() }, annotations: write },
-  { name: "git_switch_branch", description: "Switch to an existing local branch only with a clean index and working tree. Configured checkout filters may execute programs or access the network. Does not force, create or guess remote branches.", schema: { repo_path, name: ref }, annotations: { ...write, openWorldHint: true } }
-];
-
 // src/server.js
 async function main() {
-  const roots = process.env.GIT_MCP_ROOTS?.split(import_node_path2.default.delimiter).filter(Boolean) ?? [];
-  if (roots.some((root) => !import_node_path2.default.isAbsolute(root))) throw new Error("GIT_MCP_ROOTS entries must be absolute paths.");
+  const roots = process.env.GIT_MCP_ROOTS?.split(import_node_path3.default.delimiter).filter(Boolean) ?? [];
+  if (roots.some((root) => !import_node_path3.default.isAbsolute(root))) throw new Error("GIT_MCP_ROOTS entries must be absolute paths.");
   if (process.env.GIT_MCP_READ_ONLY && !["true", "false", "1", "0"].includes(process.env.GIT_MCP_READ_ONLY)) {
     throw new Error("GIT_MCP_READ_ONLY must be true, false, 1 or 0.");
   }
   const service = new GitService({ roots, readOnly: ["true", "1"].includes(process.env.GIT_MCP_READ_ONLY) });
-  const server = new McpServer({ name: "git-mcp", version: "0.1.0" });
+  const server = new McpServer({ name: "git-companion", version: "0.2.0" });
   for (const tool of tools) {
     server.registerTool(tool.name, { description: tool.description, inputSchema: tool.schema, annotations: tool.annotations }, async (args) => {
       try {

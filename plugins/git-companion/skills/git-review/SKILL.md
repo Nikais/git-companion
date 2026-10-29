@@ -1,6 +1,6 @@
 ---
 name: git-review
-description: Review local Git changes or compare branches for concrete defects using the Git MCP tools; use when the user requests a review of a diff, commit or branch.
+description: Review local Git changes or compare branches for concrete defects using the Git Companion tools; use when the user requests a review of a diff, commit or branch.
 ---
 
 Discover the plugin's `git` MCP tools and supply an absolute `repo_path` for the target working tree. Read applicable repository instructions through the host's file tools.
