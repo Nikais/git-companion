@@ -1,0 +1,20 @@
+{
+  "name": "git-mcp-local",
+  "interface": {
+    "displayName": "Git MCP — Local"
+  },
+  "plugins": [
+    {
+      "name": "git-mcp",
+      "source": {
+        "source": "local",
+        "path": "./plugins/git-mcp"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Git changes"
+  short_description: "Review local diffs, commits and branch changes"
+  default_prompt: "Use $git-review to review the current changes for actionable defects."

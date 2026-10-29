@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create focused Git commit"
+  short_description: "Review, stage and commit selected local changes"
+  default_prompt: "Use $git-commit to review and commit the changes belonging to this task."
