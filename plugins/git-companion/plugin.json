@@ -3,6 +3,8 @@
   "name": "git-companion",
   "version": "0.2.0",
   "description": "Inspect, edit, synchronize and recover Git repositories with local MCP tools and agent workflows.",
+  "homepage": "https://github.com/Nikais/git-companion",
+  "repository": "https://github.com/Nikais/git-companion",
   "keywords": [
     "git",
     "codex",
@@ -15,6 +17,7 @@
         "displayName": "Git Companion",
         "shortDescription": "Local Git tools and workflows for AI coding agents",
         "category": "Coding",
+        "websiteURL": "https://github.com/Nikais/git-companion",
         "capabilities": [
           "Read",
           "Write"
